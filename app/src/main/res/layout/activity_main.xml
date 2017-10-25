@@ -20,7 +20,7 @@
                 android:background="@color/colorPrimary"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="50dp">
+                android:layout_height="61dp">
                 <Button
                     android:id="@+id/btn_openDrawer"
                     android:layout_marginStart="10dp"
