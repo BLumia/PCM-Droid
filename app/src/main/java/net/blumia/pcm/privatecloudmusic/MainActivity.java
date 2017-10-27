@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btnOpenDrawer;
     DrawerLayout drawerSrvAndFolderList;
     ListView lvSongList;
+    ListView lvServerIconList;
 
     public static ArrayAdapter<String> adapter;
 
@@ -32,16 +33,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnOpenDrawer = (Button) findViewById(R.id.btn_openDrawer);
         drawerSrvAndFolderList = (DrawerLayout) findViewById(R.id.drawer_srvAndFolderList);
+        lvServerIconList = (ListView) findViewById(R.id.lv_server_icon_list);
         lvSongList = (ListView) findViewById(R.id.lv_song_list);
 
         List<PCMServerInfo> pcmSrvList = SQLiteUtils.GetServerInfoList();
         Log.d(TAG, "onCreate: Rows in database " + pcmSrvList.size());
 
-        ArrayList<String> myStringArray1 = new ArrayList<String>();
-        myStringArray1.add("Fuck this shit.mp3");
-        adapter = new ArrayAdapter<String>(this, R.layout.drawer_server_icon_item);
-        lvSongList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        ArrayList<PCMServerInfo> infoList = new ArrayList<>();
+        lvServerIconList.setAdapter(new ServerIconListAdapter(this, infoList));
+        infoList.add(new PCMServerInfo(1, "asd", null, null, null));
+        infoList.add(new PCMServerInfo(2, "asd", null, null, null));
 
         btnOpenDrawer.setOnClickListener(this);
     }
