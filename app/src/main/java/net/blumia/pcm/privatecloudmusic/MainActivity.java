@@ -1,6 +1,7 @@
 package net.blumia.pcm.privatecloudmusic;
 
 import android.app.Application;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +40,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         List<PCMServerInfo> pcmSrvList = SQLiteUtils.GetServerInfoList();
         Log.d(TAG, "onCreate: Rows in database " + pcmSrvList.size());
 
-        ArrayList<PCMServerInfo> infoList = new ArrayList<>();
+        if (pcmSrvList.size() == 0) {
+            Intent intent = new Intent(MainActivity.this, AddServerActivity.class);
+            startActivity(intent);
+        }
+
+        ArrayList<PCMServerInfo> infoList = (ArrayList<PCMServerInfo>)pcmSrvList;
         lvServerIconList.setAdapter(new ServerIconListAdapter(this, infoList));
         infoList.add(new PCMServerInfo(1, "asd", null, null, null));
         infoList.add(new PCMServerInfo(2, "asd", null, null, null));
@@ -52,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btn_openDrawer:
                 drawerSrvAndFolderList.openDrawer(Gravity.LEFT);
+                break;
         }
     }
 }

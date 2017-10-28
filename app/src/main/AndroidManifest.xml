@@ -12,15 +12,21 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".StartupScreen"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".AddServerActivity"
+            android:label="@string/title_activity_add_server"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

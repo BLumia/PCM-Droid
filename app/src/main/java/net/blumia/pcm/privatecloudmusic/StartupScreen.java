@@ -25,6 +25,7 @@ public class StartupScreen extends AppCompatActivity {
             } finally {
                 Intent intent = new Intent(StartupScreen.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         }
     });

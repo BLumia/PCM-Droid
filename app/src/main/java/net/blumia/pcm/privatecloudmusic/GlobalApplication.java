@@ -24,16 +24,6 @@ public class GlobalApplication extends Application {
         super.onCreate();
 
         instance = this;
-
-        serverDatabase = openOrCreateDatabase("PCM_SRV_DB", MODE_PRIVATE, null);
-        serverDatabase.execSQL(
-                "CREATE TABLE IF NOT EXISTS SrvList(" +
-                    "ServerID INTEGER PRIMARY KEY," +
-                    "ServerName VARCHAR NOT NULL," +
-                    "APIUrl VARCHAR NOT NULL," +
-                    "FileRootUrl VARCHAR NOT NULL," +
-                    "Password VARCHAR" +
-                ");"
-        );
+        serverDatabase = SQLiteUtils.InitSQLiteDatabase(this);
     }
 }

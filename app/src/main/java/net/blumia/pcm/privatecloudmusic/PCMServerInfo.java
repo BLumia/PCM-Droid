@@ -20,4 +20,11 @@ public class PCMServerInfo {
         Password = pass;
     }
 
+    public PCMServerInfo(String name, String url, String webRoot, String pass) {
+        ServerName = name;
+        APIUrl = url;
+        FileRootUrl = webRoot;
+        Password = pass;
+    }
+
 }

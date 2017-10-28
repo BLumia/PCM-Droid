@@ -1,6 +1,9 @@
 package net.blumia.pcm.privatecloudmusic;
 
+import android.app.Application;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,32 @@ public class SQLiteUtils {
             }
         }
         return retList;
+    }
+
+    public static SQLiteDatabase InitSQLiteDatabase(Application application) {
+        SQLiteDatabase serverDatabase;
+        serverDatabase = application.openOrCreateDatabase("PCM_SRV_DB", Application.MODE_PRIVATE, null);
+        serverDatabase.execSQL(
+                "CREATE TABLE IF NOT EXISTS SrvList(" +
+                        "ServerID INTEGER PRIMARY KEY," +
+                        "ServerName VARCHAR NOT NULL," +
+                        "APIUrl VARCHAR NOT NULL," +
+                        "FileRootUrl VARCHAR NOT NULL," +
+                        "Password VARCHAR" +
+                        ");"
+        );
+        return serverDatabase;
+    }
+
+    public static boolean InsertPCMServerInfo(PCMServerInfo info) {
+        SQLiteDatabase db = GlobalApplication.getInstance().serverDatabase;
+        ContentValues data = new ContentValues();
+        data.put("ServerName", info.ServerName);
+        data.put("APIUrl", info.APIUrl);
+        data.put("FileRootUrl", info.FileRootUrl);
+        data.put("password", info.Password);
+        long retVal = db.insert("SrvList", null, data);
+        return retVal != -1;
     }
 
 }
