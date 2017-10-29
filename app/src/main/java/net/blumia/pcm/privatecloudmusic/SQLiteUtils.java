@@ -59,4 +59,14 @@ public class SQLiteUtils {
         return retVal != -1;
     }
 
+    public static boolean UpdatePCMServerInfo(PCMServerInfo info) {
+        SQLiteDatabase db = GlobalApplication.getInstance().serverDatabase;
+        ContentValues data = new ContentValues();
+        data.put("ServerName", info.ServerName);
+        data.put("APIUrl", info.APIUrl);
+        data.put("FileRootUrl", info.FileRootUrl);
+        data.put("password", info.Password);
+        long retVal = db.update("SrvList", data, "ServerID="+info.ServerID, null);
+        return retVal != -1;
+    }
 }

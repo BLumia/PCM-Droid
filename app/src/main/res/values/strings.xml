@@ -3,4 +3,6 @@
     <string name="title_activity_add_server">Add Server</string>
     <string name="server_url">Server API URL:</string>
     <string name="server_file_root">Server data root:</string>
+    <string name="server_password">Server password:</string>
+    <string name="server_name">Server name:</string>
 </resources>

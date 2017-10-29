@@ -29,12 +29,27 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:background="@color/colorPrimary"
-                android:id="@+id/tv_server_name"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:text="placeholder"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="61"
+                    android:text="placeholder"
+                    android:textColor="@color/colorHeaderText"
+                    android:gravity="center_vertical"
+                    />
+                <Button
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/ic_more_vert_white_24dp"
+                    android:gravity="center_vertical"/>
+            </LinearLayout>
 
             <ListView
                 android:id="@+id/lv_folder_list"
@@ -46,13 +61,24 @@
     </LinearLayout>
 
     <LinearLayout
-        android:background="@color/colorAccent"
+        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
-        android:layout_height="45dp">
+        android:layout_height="45dp"
+        android:orientation="horizontal">
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="61"
             android:text="placeholder"
+            android:textColor="@color/colorHeaderText"
+            android:gravity="center_vertical"
             />
+        <Button
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/ic_settings_white_24dp"
+            android:gravity="center_vertical"/>
     </LinearLayout>
 </LinearLayout>
