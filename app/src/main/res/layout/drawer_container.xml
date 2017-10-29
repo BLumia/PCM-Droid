@@ -38,11 +38,15 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="61"
-                    android:text="placeholder"
+                    android:layout_marginStart="@dimen/subtitle_marginStart"
+                    android:text="@string/no_server_selected"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
                     android:textColor="@color/colorHeaderText"
                     android:gravity="center_vertical"
                     />
                 <Button
+                    android:id="@+id/btn_serverPopupMenu"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="12dp"
@@ -50,6 +54,11 @@
                     android:background="@drawable/ic_more_vert_white_24dp"
                     android:gravity="center_vertical"/>
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimaryDark"/>
 
             <ListView
                 android:id="@+id/lv_folder_list"
@@ -69,6 +78,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="61"
+            android:layout_marginStart="@dimen/subtitle_marginStart"
             android:text="placeholder"
             android:textColor="@color/colorHeaderText"
             android:gravity="center_vertical"

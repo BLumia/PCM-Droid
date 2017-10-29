@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/mi_update_server_info"
+          android:icon="@drawable/ic_edit_white_24dp"
+          android:title="@string/update_server_info"/>
+    <item android:id="@+id/mi_delete_server"
+          android:icon="@drawable/ic_delete_white_24dp"
+          android:title="@string/delete_server"/>
+</menu>

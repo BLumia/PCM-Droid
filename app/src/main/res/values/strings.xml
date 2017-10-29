@@ -5,4 +5,7 @@
     <string name="server_file_root">Server data root:</string>
     <string name="server_password">Server password:</string>
     <string name="server_name">Server name:</string>
+    <string name="update_server_info">Edit Server</string>
+    <string name="delete_server">Delete Server</string>
+    <string name="no_server_selected">Please Add Server</string>
 </resources>
