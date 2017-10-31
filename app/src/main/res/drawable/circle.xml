@@ -10,8 +10,7 @@
                 android:width="100dp"/>
         </shape>
     </item>
-    <item android:top="1dp" android:bottom="1dp"
-          android:left="1dp" android:right="1dp">
+    <item>
         <shape>
             <gradient
                 android:startColor="@color/colorHeaderText"

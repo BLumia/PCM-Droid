@@ -1,6 +1,7 @@
 package net.blumia.pcm.privatecloudmusic;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -49,10 +51,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
 
-        ArrayList<PCMServerInfo> infoList = (ArrayList<PCMServerInfo>)pcmSrvList;
-        lvServerIconList.setAdapter(new ServerIconListAdapter(this, infoList));
+        final ArrayList<PCMServerInfo> infoList = (ArrayList<PCMServerInfo>)pcmSrvList;
+        final ServerIconListAdapter serverIconListAdapter = new ServerIconListAdapter(this, infoList);
+        lvServerIconList.setAdapter(serverIconListAdapter);
         infoList.add(new PCMServerInfo(1, "asd", null, null, null));
         infoList.add(new PCMServerInfo(2, "asd", null, null, null));
+
+        lvServerIconList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // test
+                Log.d(TAG, "icon listview onClick: " + position);
+                serverIconListAdapter.setSelectedIndex(position);
+                serverIconListAdapter.notifyDataSetChanged();
+                //ServerIconListAdapter.ViewHolder holder = (ServerIconListAdapter.ViewHolder) view.getTag();
+                //holder.mImageView.setBackgroundColor(Color.BLACK);
+            }
+        });
 
         btnOpenDrawer.setOnClickListener(this);
         btnServerPopupMenu.setOnClickListener(this);

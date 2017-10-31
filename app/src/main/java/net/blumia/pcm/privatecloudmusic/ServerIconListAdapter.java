@@ -1,13 +1,19 @@
 package net.blumia.pcm.privatecloudmusic;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by wzc78 on 2017/10/26.
@@ -15,8 +21,9 @@ import java.util.ArrayList;
 
 public class ServerIconListAdapter extends BaseAdapter {
 
-    LayoutInflater mLayoutInflater;
-    ArrayList<PCMServerInfo> mInfoArrayList;
+    private LayoutInflater mLayoutInflater;
+    private ArrayList<PCMServerInfo> mInfoArrayList;
+    private int mSelectedIndex;
 
     public ServerIconListAdapter(Context context, ArrayList<PCMServerInfo> infolist) {
         super();
@@ -26,13 +33,37 @@ public class ServerIconListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
-        View view = mLayoutInflater.inflate(R.layout.drawer_server_icon_item, null);
-        ViewHolder mViewHolder = new ViewHolder();
-        mViewHolder.mImageView = view.findViewById(R.id.iv_server_icon);
+        ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = mLayoutInflater.inflate(R.layout.drawer_server_icon_item, null);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+/*
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "icon listview onClick: " + position);
+            }
+        });
+*/
+        holder.mImageView = convertView.findViewById(R.id.iv_server_icon);
+        if (position == mSelectedIndex) {
+            holder.mImageView.setBackgroundColor(Color.BLACK);
+        } else {
+            holder.mImageView.setBackground(
+                    mLayoutInflater
+                            .getContext()
+                            .getResources()
+                            .getDrawable(R.drawable.circle)
+            );
+        }
 
-        return view;
+        return convertView;
     }
 
     @Override
@@ -48,6 +79,10 @@ public class ServerIconListAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         return mInfoArrayList.size();
+    }
+
+    public void setSelectedIndex(int selectedIndex) {
+        mSelectedIndex = selectedIndex;
     }
 
     class ViewHolder {
