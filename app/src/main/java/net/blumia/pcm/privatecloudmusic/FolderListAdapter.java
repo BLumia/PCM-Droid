@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -15,31 +16,48 @@ import java.util.ArrayList;
 public class FolderListAdapter extends BaseAdapter {
 
     private LayoutInflater mLayoutInflater;
+    private ArrayList<MusicListInfo> mInfoArrayList;
 
-    public FolderListAdapter(Context context, ArrayList<PCMServerInfo> infolist) {
+    public FolderListAdapter(Context context, ArrayList<MusicListInfo> infolist) {
         super();
 
         mLayoutInflater = LayoutInflater.from(context);
-        //mInfoArrayList = infolist;
+        mInfoArrayList = infolist;
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return mInfoArrayList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return mInfoArrayList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+
+        FolderListAdapter.ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = mLayoutInflater.inflate(R.layout.drawer_folderlist_item, null);
+            convertView.setTag(holder);
+        } else {
+            holder = (FolderListAdapter.ViewHolder) convertView.getTag();
+        }
+
+        holder.mTextView = convertView.findViewById(R.id.drawer_folderlist_item);
+
+        return convertView;
+    }
+
+    class ViewHolder {
+        TextView mTextView;
     }
 }

@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btnServerPopupMenu;
     DrawerLayout drawerSrvAndFolderList;
     ListView lvSongList;
+    ListView lvFolderList;
     ListView lvServerIconList;
 
     public static ArrayAdapter<String> adapter;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerSrvAndFolderList = (DrawerLayout) findViewById(R.id.drawer_srvAndFolderList);
         lvServerIconList = (ListView) findViewById(R.id.lv_server_icon_list);
         lvSongList = (ListView) findViewById(R.id.lv_song_list);
+        lvFolderList = (ListView) findViewById(R.id.lv_folder_list);
 
         List<PCMServerInfo> pcmSrvList = SQLiteUtils.GetServerInfoList();
         Log.d(TAG, "onCreate: Rows in database " + pcmSrvList.size());
@@ -56,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lvServerIconList.setAdapter(serverIconListAdapter);
         infoList.add(new PCMServerInfo(1, "asd", null, null, null));
         infoList.add(new PCMServerInfo(2, "asd", null, null, null));
+
+        ArrayList<MusicListInfo> pcmFolderList = new ArrayList<>();
+        FolderListAdapter folderListAdapter = new FolderListAdapter(this, pcmFolderList);
+        lvFolderList.setAdapter(folderListAdapter);
+        pcmFolderList.add(new MusicListInfo("",""));
+        pcmFolderList.add(new MusicListInfo("",""));
 
         lvServerIconList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
