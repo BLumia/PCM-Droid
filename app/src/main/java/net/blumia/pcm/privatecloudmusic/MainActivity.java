@@ -65,6 +65,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pcmFolderList.add(new MusicListInfo("",""));
         pcmFolderList.add(new MusicListInfo("",""));
 
+        ArrayList<MusicItem> playlist = new ArrayList<>();
+        PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, playlist);
+        lvSongList.setAdapter(playlistAdapter);
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName2", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName3", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName4", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName5", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName6", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName7", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName8", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName9", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName0", 123123123, 123123));
+        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName1", 123123123, 123123));
         lvServerIconList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

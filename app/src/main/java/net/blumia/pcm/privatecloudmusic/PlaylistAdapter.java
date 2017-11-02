@@ -11,15 +11,15 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by wzc78 on 2017/10/31.
+ * Created by wzc78 on 2017/11/2.
  */
 
-public class FolderListAdapter extends BaseAdapter {
+public class PlaylistAdapter extends BaseAdapter {
 
     private LayoutInflater mLayoutInflater;
-    private ArrayList<MusicListInfo> mInfoArrayList;
+    private ArrayList<MusicItem> mInfoArrayList;
 
-    public FolderListAdapter(Context context, ArrayList<MusicListInfo> infolist) {
+    public PlaylistAdapter(Context context, ArrayList<MusicItem> infolist) {
         super();
 
         mLayoutInflater = LayoutInflater.from(context);
@@ -32,7 +32,7 @@ public class FolderListAdapter extends BaseAdapter {
     }
 
     @Override
-    public MusicListInfo getItem(int position) {
+    public MusicItem getItem(int position) {
         return mInfoArrayList.get(position);
     }
 
@@ -43,20 +43,21 @@ public class FolderListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        FolderListAdapter.ViewHolder holder;
+        PlaylistAdapter.ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = mLayoutInflater.inflate(R.layout.drawer_folderlist_item, null);
+            convertView = mLayoutInflater.inflate(R.layout.list_file_item, null);
             convertView.setTag(holder);
         } else {
-            holder = (FolderListAdapter.ViewHolder) convertView.getTag();
+            holder = (PlaylistAdapter.ViewHolder) convertView.getTag();
         }
 
-        holder.mTextView = convertView.findViewById(R.id.drawer_folderlist_item);
-        if (getItem(position) != null && !getItem(position).displayName.isEmpty()) {
-            holder.mTextView.setText(getItem(position).displayName);
+        holder.mTextView = convertView.findViewById(R.id.tv_music_item);
+        if (getItem(position) != null && !getItem(position).fileName.isEmpty()) {
+            holder.mTextView.setText(getItem(position).fileName);
+            Log.d("TAG", getItem(position).fileName);
         }
+
 
         return convertView;
     }

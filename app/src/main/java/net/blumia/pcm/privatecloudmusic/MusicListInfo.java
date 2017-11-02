@@ -5,7 +5,7 @@ package net.blumia.pcm.privatecloudmusic;
  */
 
 public class MusicListInfo {
-    public String displayName = null;
+    public String displayName = "Placeholder Text";
     public String folderPath = null; // if null, treat MusicListInfo as playlist instead of FolderList
     public String apiUrl = null;
 
