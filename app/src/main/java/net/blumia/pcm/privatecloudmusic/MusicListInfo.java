@@ -12,6 +12,7 @@ public class MusicListInfo {
     public MusicListInfo(String apiUrl, String folderPath) {
         this.apiUrl = apiUrl;
         this.folderPath = folderPath;
+        this.displayName = folderPath;
     }
 
     public MusicListInfo(String apiUrl) {

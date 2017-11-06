@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ListView lvFolderList;
     ListView lvServerIconList;
 
-    public static ArrayAdapter<String> adapter;
-
     private static final String TAG = "SQLite";
 
     @Override
@@ -59,14 +57,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         infoList.add(new PCMServerInfo(1, "asd", null, null, null));
         infoList.add(new PCMServerInfo(2, "asd", null, null, null));
 
-        ArrayList<MusicListInfo> pcmFolderList = new ArrayList<>();
-        FolderListAdapter folderListAdapter = new FolderListAdapter(this, pcmFolderList);
+        final ArrayList<MusicListInfo> pcmFolderList = new ArrayList<>();
+        final FolderListAdapter folderListAdapter = new FolderListAdapter(this, pcmFolderList);
         lvFolderList.setAdapter(folderListAdapter);
-        pcmFolderList.add(new MusicListInfo("",""));
-        pcmFolderList.add(new MusicListInfo("",""));
+        pcmFolderList.add(new MusicListInfo("","folderA"));
+        pcmFolderList.add(new MusicListInfo("","folderB"));
 
-        ArrayList<MusicItem> playlist = new ArrayList<>();
-        PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, playlist);
+        final ArrayList<MusicItem> playlist = new ArrayList<>();
+        final PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, playlist);
         lvSongList.setAdapter(playlistAdapter);
         playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName", 123123123, 123123));
         playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName2", 123123123, 123123));
@@ -86,6 +84,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "icon listview onClick: " + position);
                 serverIconListAdapter.setSelectedIndex(position);
                 serverIconListAdapter.notifyDataSetChanged();
+
+                pcmFolderList.clear();
+                for (int i = 0; i <= position; i++) {
+                    pcmFolderList.add(new MusicListInfo("",""));
+                }
+                folderListAdapter.notifyDataSetChanged(); //.notify();
                 //ServerIconListAdapter.ViewHolder holder = (ServerIconListAdapter.ViewHolder) view.getTag();
                 //holder.mImageView.setBackgroundColor(Color.BLACK);
             }
