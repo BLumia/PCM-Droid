@@ -17,6 +17,11 @@ import java.util.ArrayList;
 public class FolderListAdapter extends BaseAdapter {
 
     private LayoutInflater mLayoutInflater;
+
+    public void setInfoArrayList(ArrayList<MusicListInfo> infoArrayList) {
+        mInfoArrayList = infoArrayList;
+    }
+
     private ArrayList<MusicListInfo> mInfoArrayList;
 
     public FolderListAdapter(Context context, ArrayList<MusicListInfo> infolist) {

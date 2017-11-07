@@ -2,6 +2,8 @@ package net.blumia.pcm.privatecloudmusic;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,8 +19,22 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -83,15 +99,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // test
                 Log.d(TAG, "icon listview onClick: " + position);
                 serverIconListAdapter.setSelectedIndex(position);
+                PCMServerInfo info = serverIconListAdapter.getItem(position);
                 serverIconListAdapter.notifyDataSetChanged();
 
-                pcmFolderList.clear();
-                for (int i = 0; i <= position; i++) {
-                    pcmFolderList.add(new MusicListInfo("",""));
-                }
-                folderListAdapter.notifyDataSetChanged(); //.notify();
-                //ServerIconListAdapter.ViewHolder holder = (ServerIconListAdapter.ViewHolder) view.getTag();
-                //holder.mImageView.setBackgroundColor(Color.BLACK);
+                final ArrayList<MusicListInfo> infoList = new ArrayList<>();
+                infoList.add(new MusicListInfo("","folderC"));
+                infoList.add(new MusicListInfo("","folderD"));
+                requestFolderList(info, folderListAdapter);
+            }
+        });
+
+        lvFolderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
             }
         });
 
@@ -128,5 +149,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             return false;
         }
+    }
+
+    public int requestFolderList(final PCMServerInfo info, final FolderListAdapter adapter) {
+        //info.APIUrl;
+        OkHttpClient httpClient = new OkHttpClient();
+        FormBody formBody = new FormBody.Builder()
+                .add("do", "getfilelist")
+                .build();
+        Request request = new Request.Builder()
+                .url("https://pcm.blumia.cn/api.php")
+                .post(formBody)
+                .build();
+        final ArrayList<MusicListInfo> folderList = new ArrayList<>();
+
+        final Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                ArrayList<MusicListInfo> info = (ArrayList<MusicListInfo>)msg.obj;
+                freshFolderList(folderList, adapter);
+            }
+        };
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //JSONParser parser = new JSONParser();
+
+                try {
+                    JSONObject json = new JSONObject(response.body().string());
+                    JSONObject result = json.getJSONObject("result");
+                    JSONObject data = result.getJSONObject("data");
+                    JSONArray folders = data.getJSONArray("subFolderList");
+                    for(int i = 0; i < folders.length(); i++) {
+                        String folderName = (String)folders.get(i);
+                        Log.d(TAG, folderName);
+                        folderList.add(new MusicListInfo(info.APIUrl, folderName));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Message msg = new Message();
+                msg.obj = folderList;
+                handler.sendMessage(msg);
+            }
+        });
+        return 0;
+    }
+
+    public int freshFolderList(ArrayList<MusicListInfo> folderList, final FolderListAdapter adapter) {
+
+        adapter.setInfoArrayList(folderList);
+        adapter.notifyDataSetChanged();
+
+        return 0;
     }
 }

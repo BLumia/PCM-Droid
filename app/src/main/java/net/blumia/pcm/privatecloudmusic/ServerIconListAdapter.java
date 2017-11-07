@@ -67,7 +67,7 @@ public class ServerIconListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public PCMServerInfo getItem(int position) {
         return mInfoArrayList.get(position);
     }
 
