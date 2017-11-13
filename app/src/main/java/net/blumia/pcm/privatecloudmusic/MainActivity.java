@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +43,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btnOpenDrawer;
     Button btnServerPopupMenu;
     DrawerLayout drawerSrvAndFolderList;
+    TextView tvCurSrvName;
     ListView lvSongList;
     ListView lvFolderList;
     ListView lvServerIconList;
+    PCMServerInfo curSelectedSrvInfo;
 
     private static final String TAG = "SQLite";
 
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lvServerIconList = (ListView) findViewById(R.id.lv_server_icon_list);
         lvSongList = (ListView) findViewById(R.id.lv_song_list);
         lvFolderList = (ListView) findViewById(R.id.lv_folder_list);
+        tvCurSrvName = (TextView) findViewById(R.id.tv_cur_server_name);
 
         List<PCMServerInfo> pcmSrvList = SQLiteUtils.GetServerInfoList();
         Log.d(TAG, "onCreate: Rows in database " + pcmSrvList.size());
@@ -76,43 +81,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final ArrayList<MusicListInfo> pcmFolderList = new ArrayList<>();
         final FolderListAdapter folderListAdapter = new FolderListAdapter(this, pcmFolderList);
         lvFolderList.setAdapter(folderListAdapter);
-        pcmFolderList.add(new MusicListInfo("","folderA"));
-        pcmFolderList.add(new MusicListInfo("","folderB"));
 
         final ArrayList<MusicItem> playlist = new ArrayList<>();
         final PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, playlist);
         lvSongList.setAdapter(playlistAdapter);
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName2", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName3", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName4", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName5", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName6", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName7", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName8", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName9", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName0", 123123123, 123123));
-        playlist.add(new MusicItem("https://pcm.blumia.cn/a/a.mp3", "SongName1", 123123123, 123123));
         lvServerIconList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // test
                 Log.d(TAG, "icon listview onClick: " + position);
                 serverIconListAdapter.setSelectedIndex(position);
-                PCMServerInfo info = serverIconListAdapter.getItem(position);
+                curSelectedSrvInfo = serverIconListAdapter.getItem(position);
+                tvCurSrvName.setText(curSelectedSrvInfo.ServerName);
                 serverIconListAdapter.notifyDataSetChanged();
 
                 final ArrayList<MusicListInfo> infoList = new ArrayList<>();
-                infoList.add(new MusicListInfo("","folderC"));
-                infoList.add(new MusicListInfo("","folderD"));
-                requestFolderList(info, folderListAdapter);
+                requestFolderList(curSelectedSrvInfo, folderListAdapter);
             }
         });
 
         lvFolderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MusicListInfo info = folderListAdapter.getItem(position);
+                folderListAdapter.notifyDataSetChanged();
 
+                requestFileList(curSelectedSrvInfo, playlistAdapter);
             }
         });
 
@@ -149,6 +143,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             return false;
         }
+    }
+
+    public int requestFileList(final PCMServerInfo info, final PlaylistAdapter adapter) {
+
+        OkHttpClient httpClient = new OkHttpClient();
+        FormBody formBody = new FormBody.Builder()
+                .add("do", "getfilelist")
+                .add("folder", "Test")
+                .build();
+        Request request = new Request.Builder()
+                .url("https://pcm.blumia.cn/api.php")
+                .post(formBody)
+                .build();
+        final ArrayList<MusicItem> fileList = new ArrayList<>();
+        final Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                ArrayList<MusicItem> info = (ArrayList<MusicItem>)msg.obj;
+                freshFileList(fileList, adapter);
+            }
+        };
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //JSONParser parser = new JSONParser();
+
+                try {
+                    JSONObject json = new JSONObject(response.body().string());
+                    JSONObject result = json.getJSONObject("result");
+                    JSONObject data = result.getJSONObject("data");
+                    JSONArray folders = data.getJSONArray("subFolderList");
+                    JSONArray files = data.getJSONArray("musicList");
+                    for(int i = 0; i < folders.length(); i++) {
+                        String folderName = (String)folders.get(i);
+                        Log.d(TAG, folderName);
+                        //fileList.add(new MusicItem(info.APIUrl, folderName));
+                    }
+                    for(int i = 0; i < files.length(); i++) {
+                        JSONObject fileItem = files.getJSONObject(i);
+                        fileList.add(new MusicItem(info.FileRootUrl + /*"filePath" +*/ fileItem.getString("fileName"),
+                                URLDecoder.decode(fileItem.getString("fileName"), "UTF-8"),
+                                fileItem.getLong("modifiedTime"),
+                                fileItem.getLong("fileSize")));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Message msg = new Message();
+                msg.obj = fileList;
+                handler.sendMessage(msg);
+            }
+        });
+        return 0;
     }
 
     public int requestFolderList(final PCMServerInfo info, final FolderListAdapter adapter) {
@@ -200,6 +254,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 handler.sendMessage(msg);
             }
         });
+        return 0;
+    }
+
+    public int freshFileList(ArrayList<MusicItem> fileList, final PlaylistAdapter adapter) {
+
+        adapter.setInfoArrayList(fileList);
+        adapter.notifyDataSetChanged();
+
         return 0;
     }
 

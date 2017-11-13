@@ -17,6 +17,10 @@ import java.util.ArrayList;
 public class PlaylistAdapter extends BaseAdapter {
 
     private LayoutInflater mLayoutInflater;
+
+    public void setInfoArrayList(ArrayList<MusicItem> infoArrayList) {
+        mInfoArrayList = infoArrayList;
+    }
     private ArrayList<MusicItem> mInfoArrayList;
 
     public PlaylistAdapter(Context context, ArrayList<MusicItem> infolist) {
