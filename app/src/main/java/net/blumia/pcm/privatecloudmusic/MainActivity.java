@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tvCurSrvName.setText(curSelectedSrvInfo.ServerName);
                 serverIconListAdapter.notifyDataSetChanged();
 
-                final ArrayList<MusicListInfo> infoList = new ArrayList<>();
                 requestFolderList(curSelectedSrvInfo, folderListAdapter);
             }
         });
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 MusicListInfo info = folderListAdapter.getItem(position);
                 folderListAdapter.notifyDataSetChanged();
 
-                requestFileList(curSelectedSrvInfo, playlistAdapter);
+                requestFileList(info, playlistAdapter);
             }
         });
 
@@ -145,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public int requestFileList(final PCMServerInfo info, final PlaylistAdapter adapter) {
+    public int requestFileList(final MusicListInfo info, final PlaylistAdapter adapter) {
 
         OkHttpClient httpClient = new OkHttpClient();
         FormBody formBody = new FormBody.Builder()
@@ -153,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .add("folder", "Test")
                 .build();
         Request request = new Request.Builder()
-                .url("https://pcm.blumia.cn/api.php")
+                .url(info.apiUrl)
                 .post(formBody)
                 .build();
         final ArrayList<MusicItem> fileList = new ArrayList<>();
@@ -189,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     for(int i = 0; i < files.length(); i++) {
                         JSONObject fileItem = files.getJSONObject(i);
-                        fileList.add(new MusicItem(info.FileRootUrl + /*"filePath" +*/ fileItem.getString("fileName"),
+                        fileList.add(new MusicItem(info.apiUrl + /*"filePath" +*/ fileItem.getString("fileName"),
                                 URLDecoder.decode(fileItem.getString("fileName"), "UTF-8"),
                                 fileItem.getLong("modifiedTime"),
                                 fileItem.getLong("fileSize")));
