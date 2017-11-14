@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .add("folder", "Test")
                 .build();
         Request request = new Request.Builder()
-                .url(info.apiUrl)
+                .url("https://pcm.blumia.cn/api.php")
                 .post(formBody)
                 .build();
         final ArrayList<MusicItem> fileList = new ArrayList<>();
