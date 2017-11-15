@@ -1,5 +1,6 @@
 package net.blumia.pcm.privatecloudmusic;
 
+import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
@@ -109,6 +110,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        lvSongList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent serviceIntent = new Intent("android.intent.action.PLAY");
+                serviceIntent.setPackage("net.blumia.pcm.privatecloudmusic");
+                startService(serviceIntent);
+            }
+        });
+
         btnOpenDrawer.setOnClickListener(this);
         btnServerPopupMenu.setOnClickListener(this);
     }
@@ -160,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                ArrayList<MusicItem> info = (ArrayList<MusicItem>)msg.obj;
+                //ArrayList<MusicItem> info = (ArrayList<MusicItem>)msg.obj;
                 freshFileList(fileList, adapter);
             }
         };
@@ -188,10 +198,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     for(int i = 0; i < files.length(); i++) {
                         JSONObject fileItem = files.getJSONObject(i);
-                        fileList.add(new MusicItem(info.apiUrl + /*"filePath" +*/ fileItem.getString("fileName"),
+                        MusicItem mi = new MusicItem("https://pcm.blumia.cn/Test/" + /*"filePath" +*/ fileItem.getString("fileName"),
                                 URLDecoder.decode(fileItem.getString("fileName"), "UTF-8"),
                                 fileItem.getLong("modifiedTime"),
-                                fileItem.getLong("fileSize")));
+                                fileItem.getLong("fileSize"));
+                        fileList.add(mi);
+                        Log.d(TAG, "music url: " + mi.musicUrl);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -220,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                ArrayList<MusicListInfo> info = (ArrayList<MusicListInfo>)msg.obj;
+                //ArrayList<MusicListInfo> info = (ArrayList<MusicListInfo>)msg.obj;
                 freshFolderList(folderList, adapter);
             }
         };

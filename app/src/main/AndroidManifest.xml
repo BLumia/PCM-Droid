@@ -29,6 +29,12 @@
             android:label="@string/title_activity_add_server"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <service android:name=".PlayerService">
+            <intent-filter>
+                <action android:name="android.intent.action.PLAY"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
