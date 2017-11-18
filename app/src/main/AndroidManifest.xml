@@ -30,7 +30,9 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <service android:name=".PlayerService">
+        <service android:name=".PlayerService"
+                 android:enabled="true"
+                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PLAY"/>
             </intent-filter>

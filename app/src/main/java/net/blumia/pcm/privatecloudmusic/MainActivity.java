@@ -1,9 +1,12 @@
 package net.blumia.pcm.privatecloudmusic;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -49,6 +52,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ListView lvFolderList;
     ListView lvServerIconList;
     PCMServerInfo curSelectedSrvInfo;
+    PlayerService.PlayerServiceIBinder mPlayerServiceIBinder;
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mPlayerServiceIBinder = (PlayerService.PlayerServiceIBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // triggered if boooooooooooooooooooooooooooooooom
+            // this will NOT triggered if user unbind manually.
+        }
+    };
 
     private static final String TAG = "SQLite";
 
@@ -113,14 +130,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lvSongList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent serviceIntent = new Intent("android.intent.action.PLAY");
-                serviceIntent.setPackage("net.blumia.pcm.privatecloudmusic");
-                startService(serviceIntent);
+                // should not start service here.
             }
         });
 
         btnOpenDrawer.setOnClickListener(this);
         btnServerPopupMenu.setOnClickListener(this);
+
+        //Intent serviceIntent = new Intent("android.intent.action.PLAY");
+        //serviceIntent.setPackage("net.blumia.pcm.privatecloudmusic");
+        //startService(serviceIntent);
+        Intent serviceIntent = new Intent(this, PlayerService.class);
+        startService(serviceIntent); // start it first to avoid service exit when this activity destory.
+        bindService(serviceIntent, mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        unbindService(mServiceConnection);
     }
 
     @Override
