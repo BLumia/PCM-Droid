@@ -42,6 +42,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static net.blumia.pcm.privatecloudmusic.PlayerService.MSG_TIME_INFO_SEC;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     Button btnOpenDrawer;
@@ -68,6 +70,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     };
 
     private static final String TAG = "SQLite";
+
+    private Handler musicServiceHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_TIME_INFO_SEC:
+                    updateProgressBar(msg);
+            }
+        }
+    };
+
+    private void updateProgressBar(Message msg) {
+        float progress = (float)msg.arg1 / msg.arg2;
+        if (progress < 0 || progress > 100) {
+            progress = 0;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

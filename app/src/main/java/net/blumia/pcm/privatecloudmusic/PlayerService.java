@@ -24,6 +24,7 @@ public class PlayerService extends Service {
     public static MediaPlayer mp;
     public static final String ACTION_PLAY = "play";
     private final IBinder mBinder = new PlayerServiceIBinder();
+    public final static int MSG_TIME_INFO_SEC = 0;
 
     public interface OnStateChangeListenr {
         void onPlayProgressChange(MusicItem item);
