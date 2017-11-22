@@ -1,12 +1,11 @@
 <resources>
     <string name="app_name">PrivateCloudMusic</string>
-    <string name="title_activity_add_server">Add Server</string>
-    <string name="server_url">Server API URL:</string>
-    <string name="server_file_root">Server data root:</string>
-    <string name="server_password">Server password:</string>
-    <string name="server_name">Server name:</string>
-    <string name="update_server_info">Edit Server</string>
-    <string name="delete_server">Delete Server</string>
-    <string name="no_server_selected">Please Add Server</string>
-    <string name="placeholder">Placeholder</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="no_server_selected">No Server Selected</string>
+    <string name="update_server_info">Update Server Info</string>
+    <string name="delete_server">Delete This Server</string>
 </resources>
