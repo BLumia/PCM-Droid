@@ -8,4 +8,5 @@
     <string name="no_server_selected">No Server Selected</string>
     <string name="update_server_info">Update Server Info</string>
     <string name="delete_server">Delete This Server</string>
+    <string name="placeholder">Placeholder</string>
 </resources>
