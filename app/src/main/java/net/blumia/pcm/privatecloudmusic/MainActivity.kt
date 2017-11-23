@@ -1,5 +1,6 @@
 package net.blumia.pcm.privatecloudmusic
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         toggle.syncState()
 
         btn_serverPopupMenu.setOnClickListener(this)
+        btn_options.setOnClickListener(this)
     }
 
     override fun onBackPressed() {
@@ -70,8 +72,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     true
                 }
                 popup.show()
-                //drawer_layout.closeDrawer(GravityCompat.START)
+            }
+            R.id.btn_options -> run {
+                jumpToAddServerActivity()
+                drawer_layout.closeDrawer(GravityCompat.START)
             }
         }
+    }
+
+    fun jumpToAddServerActivity() {
+        val intent = Intent()
+        intent.setClass(this, AddServerActivity::class.java)
+        startActivity(intent)
     }
 }
