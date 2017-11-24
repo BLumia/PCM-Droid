@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    fun jumpToAddServerActivity() {
+    private fun jumpToAddServerActivity() {
         val intent = Intent()
         intent.setClass(this, AddServerActivity::class.java)
         startActivity(intent)
