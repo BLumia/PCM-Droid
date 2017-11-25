@@ -1,0 +1,7 @@
+<resources>
+    <declare-styleable name="AvatarView">
+        <attr name="av_fillColor" format="color" />
+        <attr name="av_textColor" format="color" />
+        <attr name="av_textString" format="string"/>
+    </declare-styleable>
+</resources>

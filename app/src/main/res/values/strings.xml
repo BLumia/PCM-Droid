@@ -9,6 +9,7 @@
     <string name="update_server_info">Update Server Info</string>
     <string name="delete_server">Delete This Server</string>
     <string name="placeholder">Placeholder</string>
+    <string name="placeholder_short">BL</string>
     <string name="title_activity_add_server">Add Server</string>
 
     <!-- Strings related to login -->

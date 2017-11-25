@@ -1,0 +1,17 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <net.blumia.droid.AvatarView
+        android:layout_width="61dp"
+        android:layout_height="61dp"
+        android:background="@color/colorAccent"
+        android:paddingBottom="40dp"
+        android:paddingLeft="20dp"
+        app:av_fillColor="@color/colorPrimary"
+        app:av_textString="@string/placeholder"
+        app:av_textColor="@color/colorPrimaryText"/>
+
+</FrameLayout>
