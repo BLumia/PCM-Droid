@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="@string/placeholder"
+            android:text="@string/placeholder_time"
             android:textColor="@color/colorPrimaryText"/>
         <SeekBar
             android:id="@+id/sb_music_progressbar"
@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="@string/placeholder"
+            android:text="@string/placeholder_time"
             android:textColor="@color/colorPrimaryText"/>
     </LinearLayout>
     <LinearLayout

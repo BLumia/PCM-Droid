@@ -18,6 +18,7 @@ enum class MusicItemType {
 }
 
 data class ServerItem (
+        var index : String,
         var serverName : String,
         var apiUrl : URL,
         var fileRootUrl : URL,
