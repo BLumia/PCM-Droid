@@ -24,7 +24,8 @@
         </activity>
         <activity
             android:name=".AddServerActivity"
-            android:label="@string/title_activity_add_server">
+            android:label="@string/title_activity_add_server"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 
