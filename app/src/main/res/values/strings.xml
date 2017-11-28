@@ -13,7 +13,7 @@
     <string name="placeholder_time">0:00</string>
     <string name="title_activity_add_server">Add Server</string>
 
-    <!-- Strings related to login -->
+    <!-- Strings related to add server -->
     <string name="prompt_api_url">PCM Server API URL</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_add_server">Add Server</string>
@@ -25,4 +25,14 @@
     </string>
     <string name="step_1">Step 1</string>
     <string name="step_2">Step 2</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_open_source_licenses">Open Source Licenses</string>
+    <string name="pref_description_open_source_licenses">Information about open source licenses</string>
+
 </resources>

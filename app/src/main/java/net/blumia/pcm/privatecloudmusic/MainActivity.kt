@@ -13,6 +13,9 @@ import android.widget.PopupMenu
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.drawer_container.*
+import android.preference.PreferenceActivity
+import java.util.prefs.Preferences
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -63,6 +66,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 popup.setOnMenuItemClickListener {
                     when (it.itemId) {
                         R.id.mi_update_server_info -> run {
+                            jumpToAddServerActivity()
                             Log.e("test", "update srv info")
                         }
                         R.id.mi_delete_server -> run {
@@ -74,15 +78,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 popup.show()
             }
             R.id.btn_options -> run {
-                jumpToAddServerActivity()
+                jumpToSettingActivity()
                 drawer_layout.closeDrawer(GravityCompat.START)
             }
         }
     }
 
     private fun jumpToAddServerActivity() {
-        val intent = Intent()
-        intent.setClass(this, AddServerActivity::class.java)
+        val intent = Intent(this, AddServerActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun jumpToSettingActivity() {
+        val intent = Intent(this, SettingsActivity::class.java)
+        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.GeneralPreferenceFragment::class.java.name)
+        intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
         startActivity(intent)
     }
 }
