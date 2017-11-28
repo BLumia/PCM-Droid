@@ -3,13 +3,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_song_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="61"/>
+        android:layout_weight="61"
+        tools:listitem="@layout/item_rv_music_items"/>
 
     <LinearLayout
         android:layout_width="match_parent"
