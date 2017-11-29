@@ -34,5 +34,8 @@
 
     <string name="pref_title_open_source_licenses">Open Source Licenses</string>
     <string name="pref_description_open_source_licenses">Information about open source licenses</string>
+    <string name="prompt_server_name">Server Name</string>
+    <string name="prompt_www_root">Music File Root URL</string>
+    <string name="action_next_step">Next Step</string>
 
 </resources>

@@ -40,10 +40,10 @@ class AddServerActivity : AppCompatActivity() {
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             when (position) {
-                1 -> return AddServerStep1.newInstance(position)
-
+                0 -> return AddServerStep1.newInstance(position)
+                1 -> return AddServerStep2.newInstance(position)
             }
-            return AddServerStep1.newInstance(position) // should be a exception
+            return AddServerStep2.newInstance(position) // should be a exception
         }
 
         override fun getCount(): Int {
