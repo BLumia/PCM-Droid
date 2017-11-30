@@ -14,6 +14,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.drawer_container.*
 import android.preference.PreferenceActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.widget.LinearLayout
+import java.net.URL
 import java.util.prefs.Preferences
 
 
@@ -28,6 +31,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+
+        val srvList = ArrayList<ServerItem>()
+        srvList.add(ServerItem(1,"1", URL("http://baidu.com"),
+                URL("http://baidu.com"),"1"))
+        srvList.add(ServerItem(1,"1", URL("http://baidu.com"),
+                URL("http://baidu.com"),"1"))
+        val srvListAdapter = ServerIconListAdapter(srvList)
+        rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        rv_server_icon_list.adapter = srvListAdapter
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
@@ -70,6 +82,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             Log.e("test", "update srv info")
                         }
                         R.id.mi_delete_server -> run {
+                            uiAddServer()
                             Log.e("test", "delete srv")
                         }
                     }
@@ -94,5 +107,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.GeneralPreferenceFragment::class.java.name)
         intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
         startActivity(intent)
+    }
+
+    private fun uiAddServer() {
+        // FIXME: this is NOT the right way to do do insert, it actually doesn't works
+        var a: ServerIconListAdapter = rv_server_icon_list.adapter as ServerIconListAdapter
+        a.addItem(ServerItem(1,"1", URL("http://baidu.com"),
+                URL("http://baidu.com"),"1"))
+        a.addItem(ServerItem(1,"1", URL("http://baidu.com"),
+                URL("http://baidu.com"),"1"))
     }
 }

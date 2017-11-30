@@ -5,6 +5,7 @@
     android:layout_height="wrap_content">
 
     <net.blumia.droid.AvatarView
+        android:id="@+id/av_icon"
         android:layout_width="61dp"
         android:layout_height="61dp"
         app:av_fillColor="@color/colorAccent"

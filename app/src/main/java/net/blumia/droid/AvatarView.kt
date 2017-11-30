@@ -125,7 +125,8 @@ class AvatarView : View {
         val contentHeight = height - paddingTop - paddingBottom
 
         //canvas.drawColor(Color.BLUE);
-        canvas.drawCircle(60f, 60f, 60f, mBitmapPaint);
+        val circleRadius = resources.displayMetrics.density * 60f / 2
+        canvas.drawCircle(circleRadius, circleRadius, circleRadius, mBitmapPaint);
 
         // Draw the text.
         canvas.drawText(mTextString!!,

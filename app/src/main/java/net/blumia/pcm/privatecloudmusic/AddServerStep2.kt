@@ -24,7 +24,7 @@ class AddServerStep2 : Fragment() {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private var mAuthTask: UserLoginTask? = null
+    private var mAsyncTask: AddServerTask? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -46,7 +46,7 @@ class AddServerStep2 : Fragment() {
      */
     private fun attemptAddServer() {
 
-        if (mAuthTask != null) {
+        if (mAsyncTask != null) {
             return
         }
 
@@ -55,6 +55,7 @@ class AddServerStep2 : Fragment() {
         //password.error = null
 
         // Store values at the time of the login attempt.
+        val srvName = view!!.prompt_server_name.text.toString()
         val apiUrlStr = view!!.prompt_api_url.text.toString()
         //val passwordStr = password.text.toString()
 
@@ -80,8 +81,8 @@ class AddServerStep2 : Fragment() {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true)
-            mAuthTask = UserLoginTask(apiUrlStr)
-            mAuthTask!!.execute(null as Void?)
+            mAsyncTask = AddServerTask(srvName, apiUrlStr)
+            mAsyncTask!!.execute(null as Void?)
         }
     }
 
@@ -148,14 +149,14 @@ class AddServerStep2 : Fragment() {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    inner class UserLoginTask internal constructor(private val mApiUrl: String) : AsyncTask<Void, Void, Boolean>() {
+    inner class AddServerTask internal constructor(private val mSrvName: String, private val mApiUrl: String) : AsyncTask<Void, Void, Boolean>() {
 
         override fun doInBackground(vararg params: Void): Boolean? {
             // TODO: attempt authentication against a network service.
 
             try {
                 val values = ContentValues()
-                values.put("name", "PCM Test Name")
+                values.put("name", mSrvName)
                 values.put("api_url", "https://pcm.blumia.cn/api.php")
                 values.put("file_root_url", "https://pcm.blumia.cn/")
                 values.put("password", "")
@@ -171,7 +172,7 @@ class AddServerStep2 : Fragment() {
 
         override fun onPostExecute(success: Boolean?) {
 
-            mAuthTask = null
+            mAsyncTask = null
             showProgress(false)
 
             if (success!!) {
@@ -184,7 +185,7 @@ class AddServerStep2 : Fragment() {
         }
 
         override fun onCancelled() {
-            mAuthTask = null
+            mAsyncTask = null
             showProgress(false)
         }
     }
