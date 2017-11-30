@@ -18,7 +18,7 @@ enum class MusicItemType {
 }
 
 data class ServerItem (
-        var index : String,
+        var index : Int,
         var serverName : String,
         var apiUrl : URL,
         var fileRootUrl : URL,
@@ -39,4 +39,12 @@ data class MusicItem (
         var fileSize : Long,
         var useRelativePath : Boolean = true,
         var type : MusicItemType
+)
+
+class ServerAnkoItem (
+        val index : Int,
+        val serverName : String,
+        val apiUrl : String,
+        val fileRootUrl : String,
+        val password : String
 )

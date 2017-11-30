@@ -9,7 +9,11 @@ import org.jetbrains.anko.db.*
  */
 
 class SQLiteDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "PCM_SRV_DB", null, 1) {
+
     companion object {
+
+        const val DB_TABLE_SRV_LIST : String = "SrvList"
+
         private var instance: SQLiteDatabaseOpenHelper? = null
 
         @Synchronized
@@ -23,7 +27,7 @@ class SQLiteDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "PCM
 
     override fun onCreate(db: SQLiteDatabase) {
         // Here you create tables
-        db.createTable("SrvList", true,
+        db.createTable(DB_TABLE_SRV_LIST, true,
                 "id" to INTEGER + PRIMARY_KEY + UNIQUE,
                 "name" to TEXT,
                 "api_url" to TEXT,
@@ -33,7 +37,7 @@ class SQLiteDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "PCM
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         // Here you can upgrade tables, as usual
-        db.dropTable("SrvList", true)
+        db.dropTable(DB_TABLE_SRV_LIST, true)
     }
 }
 

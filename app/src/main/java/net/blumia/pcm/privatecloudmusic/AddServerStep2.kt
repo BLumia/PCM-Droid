@@ -3,6 +3,7 @@ package net.blumia.pcm.privatecloudmusic
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
+import android.content.ContentValues
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +12,10 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import kotlinx.android.synthetic.main.pager_add_server_step2.view.*
+import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
+import org.jetbrains.anko.doAsync
 
 /**
  * Created by wzc78 on 2017/11/29.
@@ -150,13 +154,19 @@ class AddServerStep2 : Fragment() {
             // TODO: attempt authentication against a network service.
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000)
+                val values = ContentValues()
+                values.put("name", "PCM Test Name")
+                values.put("api_url", "https://pcm.blumia.cn/api.php")
+                values.put("file_root_url", "https://pcm.blumia.cn/")
+                values.put("password", "")
+                context.database.use {
+                    insert(DB_TABLE_SRV_LIST, null, values)
+                }
             } catch (e: InterruptedException) {
                 return false
             }
 
-            return true //
+            return true
         }
 
         override fun onPostExecute(success: Boolean?) {
@@ -165,6 +175,7 @@ class AddServerStep2 : Fragment() {
             showProgress(false)
 
             if (success!!) {
+                Toast.makeText(view!!.context, R.string.placeholder, Toast.LENGTH_SHORT) // FIXME: toast not shown
                 activity.finish()
             } else {
                 view!!.prompt_api_url.error = getString(R.string.error_incorrect_password)
