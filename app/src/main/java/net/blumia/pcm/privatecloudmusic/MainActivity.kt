@@ -16,6 +16,11 @@ import kotlinx.android.synthetic.main.drawer_container.*
 import android.preference.PreferenceActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.LinearLayout
+import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
+import org.jetbrains.anko.db.MapRowParser
+import org.jetbrains.anko.db.parseList
+import org.jetbrains.anko.db.select
+import org.jetbrains.anko.doAsync
 import java.net.URL
 import java.util.prefs.Preferences
 
@@ -32,17 +37,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
-        val srvList = ArrayList<ServerItem>()
-        srvList.add(ServerItem(1,"1", URL("http://baidu.com"),
-                URL("http://baidu.com"),"1"))
-        srvList.add(ServerItem(1,"1", URL("http://baidu.com"),
-                URL("http://baidu.com"),"1"))
-        val srvListAdapter = ServerIconListAdapter(srvList)
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-        rv_server_icon_list.adapter = srvListAdapter
+        rv_server_icon_list.adapter = ServerIconListAdapter(ArrayList())
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
+
+        doAsync {
+            database.use {
+                var srvList = ArrayList<ServerAnkoItem>()
+                select(DB_TABLE_SRV_LIST).exec { parseList(
+                        object: MapRowParser<List<ServerAnkoItem>> {
+                            override fun parseRow(columns : Map<String, Any?>) : ArrayList<ServerAnkoItem> {
+                                val id = columns.getValue("id").toString().toInt()
+                                val name = columns.getValue("name").toString()
+                                val api_url = columns.getValue("api_url").toString()
+                                val file_root_url = columns.getValue("file_root_url").toString()
+                                val password = columns.getValue("password").toString()
+                                val srv = ServerAnkoItem(id, name, api_url, file_root_url, password)
+                                srvList.add(srv)
+                                Log.e("asd", id.toString() + name)
+
+                                return srvList
+                            }
+                        }
+                )}
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -116,5 +137,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 URL("http://baidu.com"),"1"))
         a.addItem(ServerItem(1,"1", URL("http://baidu.com"),
                 URL("http://baidu.com"),"1"))
+        a.notifyDataSetChanged()
     }
 }
