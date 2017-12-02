@@ -27,10 +27,14 @@ import java.util.prefs.Preferences
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    var curServerItem: ServerItem? = null
+    private var curServerItem: ServerItem? = null
+    private var prefs: Prefs? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        prefs = Prefs(this)
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -40,15 +44,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         toggle.syncState()
 
         val serverIconListAdapter = ServerIconListAdapter(this)
+        serverIconListAdapter.setOnItemClickListener(object :ServerIconListAdapter.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                Log.e("RVItemClick", position.toString())
+                //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         rv_server_icon_list.adapter = serverIconListAdapter
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
 
-        if (serverIconListAdapter.itemCount > 0) {
-            // shared
-            curServerItem = serverIconListAdapter.getItem(0)
+        val serverCnt = serverIconListAdapter.itemCount
+        if (serverCnt > 0) {
+            curServerItem = if (prefs!!.curSrvIndex in 0..(serverCnt - 1)) {
+                serverIconListAdapter.getItem(prefs!!.curSrvIndex)
+            } else {
+                serverIconListAdapter.getItem(0)
+            }
+        } else {
+            // open add server activity?
         }
     }
 

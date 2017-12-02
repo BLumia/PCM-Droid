@@ -13,9 +13,26 @@ import java.net.URL
 class ServerIconListAdapter(activity: MainActivity) : RecyclerView.Adapter<ServerIconListAdapter.ViewHolder>() {
 
     private var list : List<Map<String, Any?>> = activity.getServerListDataFromDB()
+    private var mOnItemClickListener: OnItemClickListener? = null
+
+    interface OnItemClickListener {
+        fun onItemClick(view: View, position: Int)
+    }
+
+    fun setOnItemClickListener(mOnItemClickListener: OnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener
+    }
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         holder!!.bindItems(list[position])
+
+        // on click listener
+        if (mOnItemClickListener != null) {
+            holder.itemView.setOnClickListener {
+                val position = holder.layoutPosition // 1
+                mOnItemClickListener!!.onItemClick(holder.itemView, position) // 2
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
