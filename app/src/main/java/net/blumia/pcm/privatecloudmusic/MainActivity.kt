@@ -27,6 +27,8 @@ import java.util.prefs.Preferences
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
+    var curServerItem: ServerItem? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,11 +39,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
+        val serverIconListAdapter = ServerIconListAdapter(this)
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-        rv_server_icon_list.adapter = ServerIconListAdapter(this)
+        rv_server_icon_list.adapter = serverIconListAdapter
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
+
+        if (serverIconListAdapter.itemCount > 0) {
+            // shared
+            curServerItem = serverIconListAdapter.getItem(0)
+        }
     }
 
     override fun onBackPressed() {
@@ -81,7 +89,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             Log.e("test", "update srv info")
                         }
                         R.id.mi_delete_server -> run {
-                            uiAddServer()
                             Log.e("test", "delete srv")
                         }
                     }
@@ -96,19 +103,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    fun getServerListDataFromDB(): ArrayList<Map<String, Any?>> {
-        var srvList = ArrayList<Map<String, Any?>>()
+    fun getServerListDataFromDB(): List<Map<String, Any?>> {
+        var srvList:List<Map<String, Any?>> = ArrayList()
         database.use {
-            select(DB_TABLE_SRV_LIST).exec { parseList(
-                    object: MapRowParser<List<ServerAnkoItem>> {
-                        override fun parseRow(columns : Map<String, Any?>) : ArrayList<ServerAnkoItem> {
-                            srvList.add(columns)
+            select(DB_TABLE_SRV_LIST).exec {
+                srvList = parseList(
+                    object: MapRowParser<Map<String, Any?>> {
+                        override fun parseRow(columns : Map<String, Any?>) : Map<String, Any?> {
+                            //srvList.add(columns)
                             Log.e("asd", columns.toString())
-
-                            return ArrayList()
+                            return columns
                         }
                     }
-            )}
+                )
+            }
         }
         return srvList
     }
@@ -123,11 +131,5 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.GeneralPreferenceFragment::class.java.name)
         intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
         startActivity(intent)
-    }
-
-    private fun uiAddServer() {
-        // FIXME: this is NOT the right way to do do insert, it actually doesn't works
-        val a: ServerIconListAdapter = rv_server_icon_list.adapter as ServerIconListAdapter
-        a.notifyDataSetChanged()
     }
 }
