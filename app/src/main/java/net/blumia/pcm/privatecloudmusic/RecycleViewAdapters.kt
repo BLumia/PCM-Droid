@@ -9,9 +9,12 @@ import kotlinx.android.synthetic.main.item_avatar_view.view.*
 /**
  * Created by wzc78 on 2017/11/30.
  */
-class ServerIconListAdapter(val srvList: ArrayList<ServerItem>) : RecyclerView.Adapter<ServerIconListAdapter.ViewHolder>() {
+class ServerIconListAdapter(activity: MainActivity) : RecyclerView.Adapter<ServerIconListAdapter.ViewHolder>() {
+
+    private var list : ArrayList<Map<String, Any?>> = activity.getServerListDataFromDB()
+
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder!!.bindItems(srvList[position])
+        holder!!.bindItems(list[position])
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
@@ -20,17 +23,12 @@ class ServerIconListAdapter(val srvList: ArrayList<ServerItem>) : RecyclerView.A
     }
 
     override fun getItemCount(): Int {
-        return srvList.size
-    }
-
-    // FIXME: REMOVE ME!
-    fun addItem(item: ServerItem) {
-        srvList.add(item)
+        return list.size
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bindItems(serverItem: ServerItem) {
-            itemView.av_icon.textString = "BL" // serverItem.blah
+        fun bindItems(oneItem: Map<String, Any?>) {
+            itemView.av_icon.textString = oneItem["id"].toString()
         }
     }
 }

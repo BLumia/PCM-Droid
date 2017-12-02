@@ -38,32 +38,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         toggle.syncState()
 
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-        rv_server_icon_list.adapter = ServerIconListAdapter(ArrayList())
+        rv_server_icon_list.adapter = ServerIconListAdapter(this)
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
-
-        doAsync {
-            database.use {
-                var srvList = ArrayList<ServerAnkoItem>()
-                select(DB_TABLE_SRV_LIST).exec { parseList(
-                        object: MapRowParser<List<ServerAnkoItem>> {
-                            override fun parseRow(columns : Map<String, Any?>) : ArrayList<ServerAnkoItem> {
-                                val id = columns.getValue("id").toString().toInt()
-                                val name = columns.getValue("name").toString()
-                                val api_url = columns.getValue("api_url").toString()
-                                val file_root_url = columns.getValue("file_root_url").toString()
-                                val password = columns.getValue("password").toString()
-                                val srv = ServerAnkoItem(id, name, api_url, file_root_url, password)
-                                srvList.add(srv)
-                                Log.e("asd", id.toString() + name)
-
-                                return srvList
-                            }
-                        }
-                )}
-            }
-        }
     }
 
     override fun onBackPressed() {
@@ -118,6 +96,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    fun getServerListDataFromDB(): ArrayList<Map<String, Any?>> {
+        var srvList = ArrayList<Map<String, Any?>>()
+        database.use {
+            select(DB_TABLE_SRV_LIST).exec { parseList(
+                    object: MapRowParser<List<ServerAnkoItem>> {
+                        override fun parseRow(columns : Map<String, Any?>) : ArrayList<ServerAnkoItem> {
+                            srvList.add(columns)
+                            Log.e("asd", columns.toString())
+
+                            return ArrayList()
+                        }
+                    }
+            )}
+        }
+        return srvList
+    }
+
     private fun jumpToAddServerActivity() {
         val intent = Intent(this, AddServerActivity::class.java)
         startActivity(intent)
@@ -132,11 +127,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun uiAddServer() {
         // FIXME: this is NOT the right way to do do insert, it actually doesn't works
-        var a: ServerIconListAdapter = rv_server_icon_list.adapter as ServerIconListAdapter
-        a.addItem(ServerItem(1,"1", URL("http://baidu.com"),
-                URL("http://baidu.com"),"1"))
-        a.addItem(ServerItem(1,"1", URL("http://baidu.com"),
-                URL("http://baidu.com"),"1"))
+        val a: ServerIconListAdapter = rv_server_icon_list.adapter as ServerIconListAdapter
         a.notifyDataSetChanged()
     }
 }
