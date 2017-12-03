@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.drawer_container.*
 import android.preference.PreferenceActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.LinearLayout
+import kotlinx.android.synthetic.main.content_main.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
 import okhttp3.*
 import org.jetbrains.anko.db.MapRowParser
@@ -48,32 +49,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val serverIconListAdapter = ServerIconListAdapter(this)
         serverIconListAdapter.setOnItemClickListener(object: ServerIconListAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
-                var item: ServerItem = serverIconListAdapter.getItem(position)
-                var httpClient = OkHttpClient()
-                var formBody = FormBody.Builder()
-                        .add("do", "getfilelist")
-                        .build()
-                var request = Request.Builder()
-                        .url(item.apiUrl)
-                        .post(formBody)
-                        .build()
-                httpClient.newCall(request).enqueue(object: okhttp3.Callback {
-                    override fun onFailure(call: Call?, e: IOException?) {
-                        e?.printStackTrace()
-                    }
-
-                    override fun onResponse(call: Call?, response: Response?) {
-                        val result = response!!.body()!!.string()
-                        this@MainActivity.runOnUiThread {
-                            Log.e("Response", result)
-
-                            var folderListAdapter = rv_folder_list.adapter as FolderListAdapter
-                            folderListAdapter.updateListFromJsonString(result)
-                            folderListAdapter.notifyDataSetChanged()
-
-                        }
-                    }
-                })
+                fetchFolderList(serverIconListAdapter.getItem(position))
             }
         })
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
@@ -81,6 +57,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         rv_folder_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         rv_folder_list.adapter = FolderListAdapter(this)
+
+        rv_song_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        rv_song_list.adapter = SongListAdapter(this)
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
@@ -164,6 +143,68 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         return srvList
+    }
+
+    private fun fetchSongList(folderItem: PlaylistItem) {
+        if (curServerItem == null) return
+        val folderOrPlaylist = if (folderItem.type == PlaylistType.FOLDER) "folder" else "playlist"
+        val httpClient = OkHttpClient()
+        val formBody = FormBody.Builder()
+                .add("do", "getfilelist")
+                .add(folderOrPlaylist, folderItem.folderPath)
+                .build()
+        val request = Request.Builder()
+                .url(curServerItem!!.apiUrl)
+                .post(formBody)
+                .build()
+        httpClient.newCall(request).enqueue(object: okhttp3.Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+                e?.printStackTrace()
+            }
+
+            override fun onResponse(call: Call?, response: Response?) {
+                val result = response!!.body()!!.string()
+                this@MainActivity.runOnUiThread {
+                    Log.e("Response", result)
+
+                    val songListAdapter = rv_song_list.adapter as SongListAdapter
+                    songListAdapter.updateListFromJsonString(result)
+                    songListAdapter.notifyDataSetChanged()
+
+                }
+            }
+        })
+    }
+
+    private fun fetchFolderList(srvItem: ServerItem) {
+        val httpClient = OkHttpClient()
+        val formBody = FormBody.Builder()
+                .add("do", "getfilelist")
+                .build()
+        val request = Request.Builder()
+                .url(srvItem.apiUrl)
+                .post(formBody)
+                .build()
+        httpClient.newCall(request).enqueue(object: okhttp3.Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+                e?.printStackTrace()
+            }
+
+            override fun onResponse(call: Call?, response: Response?) {
+                val result = response!!.body()!!.string()
+                this@MainActivity.runOnUiThread {
+                    Log.e("Response", result)
+
+                    val folderListAdapter = rv_folder_list.adapter as FolderListAdapter
+                    folderListAdapter.updateListFromJsonString(result)
+                    folderListAdapter.notifyDataSetChanged()
+
+                    if (folderListAdapter.itemCount > 0) {
+                        fetchSongList(folderListAdapter.getItem(0))
+                    }
+                }
+            }
+        })
     }
 
     private fun jumpToAddServerActivity() {
