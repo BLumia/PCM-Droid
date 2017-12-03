@@ -17,10 +17,12 @@ import android.preference.PreferenceActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.LinearLayout
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
+import okhttp3.*
 import org.jetbrains.anko.db.MapRowParser
 import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
 import org.jetbrains.anko.doAsync
+import java.io.IOException
 import java.net.URL
 import java.util.prefs.Preferences
 
@@ -44,14 +46,41 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         toggle.syncState()
 
         val serverIconListAdapter = ServerIconListAdapter(this)
-        serverIconListAdapter.setOnItemClickListener(object :ServerIconListAdapter.OnItemClickListener {
+        serverIconListAdapter.setOnItemClickListener(object: ServerIconListAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
-                Log.e("RVItemClick", position.toString())
-                //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                var item: ServerItem = serverIconListAdapter.getItem(position)
+                var httpClient = OkHttpClient()
+                var formBody = FormBody.Builder()
+                        .add("do", "getfilelist")
+                        .build()
+                var request = Request.Builder()
+                        .url(item.apiUrl)
+                        .post(formBody)
+                        .build()
+                httpClient.newCall(request).enqueue(object: okhttp3.Callback {
+                    override fun onFailure(call: Call?, e: IOException?) {
+                        e?.printStackTrace()
+                    }
+
+                    override fun onResponse(call: Call?, response: Response?) {
+                        val result = response!!.body()!!.string()
+                        this@MainActivity.runOnUiThread {
+                            Log.e("Response", result)
+
+                            var folderListAdapter = rv_folder_list.adapter as FolderListAdapter
+                            folderListAdapter.updateListFromJsonString(result)
+                            folderListAdapter.notifyDataSetChanged()
+
+                        }
+                    }
+                })
             }
         })
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         rv_server_icon_list.adapter = serverIconListAdapter
+
+        rv_folder_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        rv_folder_list.adapter = FolderListAdapter(this)
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
