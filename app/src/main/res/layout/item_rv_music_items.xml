@@ -8,6 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/placeholder"
-        android:padding="14dp"/>
+        android:padding="14dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"/>
 
 </android.support.constraint.ConstraintLayout>

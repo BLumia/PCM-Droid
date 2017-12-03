@@ -8,10 +8,8 @@ import kotlinx.android.synthetic.main.item_avatar_view.view.*
 import kotlinx.android.synthetic.main.item_rv_folder.view.*
 import java.net.URL
 import org.json.JSONException
-import android.content.ContentValues.TAG
 import android.util.Log
 import kotlinx.android.synthetic.main.item_rv_music_items.view.*
-import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLDecoder
 
@@ -117,7 +115,7 @@ class FolderListAdapter(activity: MainActivity) : RecyclerView.Adapter<FolderLis
             val folders = data.getJSONArray("subFolderList")
             list.clear()
             for (i in 0 until folders.length()) {
-                val rawFolderName = folders.get(i) as String
+                val rawFolderName = folders.getString(i)
                 val folderName = URLDecoder.decode(rawFolderName, "UTF-8")
                 list.add(PlaylistItem(folderName, rawFolderName, PlaylistType.FOLDER))
             }
@@ -181,8 +179,9 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
             val musicList = data.getJSONArray("musicList")
             list.clear()
             for (i in 0 until folders.length()) {
-                val rawFolderName = folders.get(i) as String
+                val rawFolderName = folders.getString(i)
                 val folderName = URLDecoder.decode(rawFolderName, "UTF-8")
+                Log.e("fuck", rawFolderName + "  " + folderName)
                 list.add(MusicItem(folderName, rawFolderName, 0L, 0L, true, MusicItemType.SUB_FOLDER))
             }
             for (i in 0 until musicList.length()) {

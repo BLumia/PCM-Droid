@@ -9,6 +9,9 @@
         android:layout_height="wrap_content"
         android:text="@string/placeholder"
         android:textColor="@color/colorPrimaryText"
-        android:padding="10dp"/>
+        android:padding="10dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"/>
 
 </android.support.constraint.ConstraintLayout>

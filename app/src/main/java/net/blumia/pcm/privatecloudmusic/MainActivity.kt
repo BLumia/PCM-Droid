@@ -11,7 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.drawer_container.*
 import android.preference.PreferenceActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -22,11 +21,8 @@ import okhttp3.*
 import org.jetbrains.anko.db.MapRowParser
 import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
-import org.jetbrains.anko.doAsync
 import java.io.IOException
 import java.net.URL
-import java.util.prefs.Preferences
-
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -55,8 +51,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         rv_server_icon_list.adapter = serverIconListAdapter
 
+        val folderListAdapter = FolderListAdapter(this)
+        folderListAdapter.setOnItemClickListener(object: FolderListAdapter.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                fetchSongList(folderListAdapter.getItem(position))
+            }
+        })
         rv_folder_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-        rv_folder_list.adapter = FolderListAdapter(this)
+        rv_folder_list.adapter = folderListAdapter
 
         rv_song_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         rv_song_list.adapter = SongListAdapter(this)
@@ -101,7 +103,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         when (v?.id) {
             R.id.btn_serverPopupMenu -> run {
                 val popup = PopupMenu(this, v)
