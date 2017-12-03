@@ -36,8 +36,8 @@ class ServerIconListAdapter(activity: MainActivity) : RecyclerView.Adapter<Serve
         // on click listener
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener {
-                val position = holder.layoutPosition // 1
-                mOnItemClickListener!!.onItemClick(holder.itemView, position) // 2
+                val pos = holder.layoutPosition // 1
+                mOnItemClickListener!!.onItemClick(holder.itemView, pos) // 2
             }
         }
     }
@@ -88,8 +88,8 @@ class FolderListAdapter(activity: MainActivity) : RecyclerView.Adapter<FolderLis
         // on click listener
         if (mOnItemClickListener != null) {
             holder.itemView.rvi_folder_name.setOnClickListener {
-                val position = holder.layoutPosition // 1
-                mOnItemClickListener!!.onItemClick(holder.itemView, position) // 2
+                val pos = holder.layoutPosition // 1
+                mOnItemClickListener!!.onItemClick(holder.itemView, pos) // 2
             }
         }
     }
@@ -109,8 +109,8 @@ class FolderListAdapter(activity: MainActivity) : RecyclerView.Adapter<FolderLis
 
     fun updateListFromJsonString(json: String) {
         try {
-            val json = JSONObject(json)
-            val result = json.getJSONObject("result")
+            val jsonObj = JSONObject(json)
+            val result = jsonObj.getJSONObject("result")
             val data = result.getJSONObject("data")
             val folders = data.getJSONArray("subFolderList")
             list.clear()
@@ -151,8 +151,8 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
         // on click listener
         if (mOnItemClickListener != null) {
             holder.itemView.rvi_song_item.setOnClickListener {
-                val position = holder.layoutPosition // 1
-                mOnItemClickListener!!.onItemClick(holder.itemView, position) // 2
+                val pos = holder.layoutPosition // 1
+                mOnItemClickListener!!.onItemClick(holder.itemView, pos) // 2
             }
         }
     }
@@ -172,8 +172,8 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
 
     fun updateListFromJsonString(json: String) {
         try {
-            val json = JSONObject(json)
-            val result = json.getJSONObject("result")
+            val jsonObj = JSONObject(json)
+            val result = jsonObj.getJSONObject("result")
             val data = result.getJSONObject("data")
             val folders = data.getJSONArray("subFolderList")
             val musicList = data.getJSONArray("musicList")
