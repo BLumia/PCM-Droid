@@ -87,7 +87,7 @@ class FolderListAdapter(activity: MainActivity) : RecyclerView.Adapter<FolderLis
 
         // on click listener
         if (mOnItemClickListener != null) {
-            holder.itemView.setOnClickListener {
+            holder.itemView.rvi_folder_name.setOnClickListener {
                 val position = holder.layoutPosition // 1
                 mOnItemClickListener!!.onItemClick(holder.itemView, position) // 2
             }
@@ -150,7 +150,7 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
 
         // on click listener
         if (mOnItemClickListener != null) {
-            holder.itemView.setOnClickListener {
+            holder.itemView.rvi_song_item.setOnClickListener {
                 val position = holder.layoutPosition // 1
                 mOnItemClickListener!!.onItemClick(holder.itemView, position) // 2
             }
@@ -201,6 +201,9 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bindItems(oneItem: MusicItem) {
             itemView.rvi_song_item_name.text = oneItem.name
+            itemView.rvi_song_item_icon.setImageResource(
+                    if (oneItem.type == MusicItemType.MUSIC) R.drawable.ic_music_note_purple_900_24dp
+                    else R.drawable.ic_folder_open_lime_900_24dp)
         }
     }
 }

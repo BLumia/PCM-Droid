@@ -14,7 +14,7 @@ enum class PlaylistType {
 }
 
 enum class MusicItemType {
-    MUSIC, SUB_FOLDER
+    MUSIC, SUB_FOLDER, SUB_PLAYLIST
 }
 
 data class ServerItem (

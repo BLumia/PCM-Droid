@@ -60,8 +60,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         rv_folder_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         rv_folder_list.adapter = folderListAdapter
 
+        val songListAdapter = SongListAdapter(this)
+        songListAdapter.setOnItemClickListener(object: SongListAdapter.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                songItemOnClick(songListAdapter.getItem(position), position)
+            }
+        })
         rv_song_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-        rv_song_list.adapter = SongListAdapter(this)
+        rv_song_list.adapter = songListAdapter
 
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
@@ -146,6 +152,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         return srvList
     }
 
+    private fun songItemOnClick(item: MusicItem, position: Int) {
+        if (item.type == MusicItemType.MUSIC) {
+            // do playback
+            Log.e("playback", "playback stuff" + position)
+        } else {
+            // open folder, for now we ignore the relative path setting
+            val type = if (item.type == MusicItemType.SUB_FOLDER) PlaylistType.FOLDER else PlaylistType.PLAYLIST
+            fetchSongList(PlaylistItem(item.name, item.filePathAndName, type))
+        }
+    }
+
     private fun fetchSongList(folderItem: PlaylistItem) {
         if (curServerItem == null) return
         val folderOrPlaylist = if (folderItem.type == PlaylistType.FOLDER) "folder" else "playlist"
@@ -193,6 +210,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             override fun onResponse(call: Call?, response: Response?) {
                 val result = response!!.body()!!.string()
+                Log.e("result", result)
                 this@MainActivity.runOnUiThread {
                     Log.e("Response", result)
 
