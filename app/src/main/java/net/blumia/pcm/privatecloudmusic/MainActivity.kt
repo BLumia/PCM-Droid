@@ -24,15 +24,39 @@ import org.jetbrains.anko.db.MapRowParser
 import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
 import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.yesButton
 import java.io.IOException
 import java.net.URL
+import android.content.ComponentName
+import android.content.Context
+import android.widget.Toast
+import net.blumia.pcm.privatecloudmusic.PlayerService.LocalBinder
+import android.os.IBinder
+import android.content.ServiceConnection
+import android.content.Context.BIND_AUTO_CREATE
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private var curServerItem: ServerItem? = null
     private var prefs: Prefs? = null
+    private var player: PlayerService? = null
+    var serviceBound = false
+
+    //Binding this Client to the AudioPlayer Service
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            val binder = service as PlayerService.LocalBinder
+            player = binder.service
+            serviceBound = true
+
+            Toast.makeText(this@MainActivity, "Service Bound", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            serviceBound = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -161,6 +185,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if (item.type == MusicItemType.MUSIC) {
             // do playback
             Log.e("playback", "playback stuff" + position)
+            playAudio("https://pcm.blumia.cn/%E6%B5%8B%E8%AF%95/guitarvst.mp3")
         } else {
             // open folder, for now we ignore the relative path setting
             val type = if (item.type == MusicItemType.SUB_FOLDER) PlaylistType.FOLDER else PlaylistType.PLAYLIST
@@ -251,5 +276,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.GeneralPreferenceFragment::class.java.name)
         intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
         startActivity(intent)
+    }
+
+    private fun playAudio(media: String) {
+        //Check is service is active
+        if (!serviceBound) {
+            val playerIntent = Intent(this, PlayerService::class.java)
+            playerIntent.putExtra("media", media)
+            startService(playerIntent)
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        } else {
+            //Service is active
+            //Send media with BroadcastReceiver
+        }
     }
 }
