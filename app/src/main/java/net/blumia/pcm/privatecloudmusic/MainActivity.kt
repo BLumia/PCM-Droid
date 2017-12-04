@@ -18,9 +18,14 @@ import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.content_main.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
 import okhttp3.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.contentView
 import org.jetbrains.anko.db.MapRowParser
 import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
+import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 import java.io.IOException
 import java.net.URL
 
@@ -181,7 +186,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onResponse(call: Call?, response: Response?) {
-                val result = response!!.body()!!.string()
+                if (response == null) {
+                    snackbar(this@MainActivity.contentView!!, "Server: No Response")
+                    return
+                }
+                if (response.code() != 200) {
+                    this@MainActivity.runOnUiThread {
+                        snackbar(this@MainActivity.contentView!!, "Server: " + response.code() + " " + response.message())
+                    }
+                    return
+                }
+                val result = response.body()!!.string()
                 this@MainActivity.runOnUiThread {
                     Log.e("Response", result)
 
