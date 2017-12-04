@@ -29,10 +29,8 @@ import java.net.URL
 import android.content.ComponentName
 import android.content.Context
 import android.widget.Toast
-import net.blumia.pcm.privatecloudmusic.PlayerService.LocalBinder
 import android.os.IBinder
 import android.content.ServiceConnection
-import android.content.Context.BIND_AUTO_CREATE
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -160,6 +158,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 jumpToSettingActivity()
                 drawer_layout.closeDrawer(GravityCompat.START)
             }
+        }
+    }
+
+    public override fun onSaveInstanceState(savedInstanceState: Bundle?) {
+        savedInstanceState!!.putBoolean("ServiceState", serviceBound)
+        super.onSaveInstanceState(savedInstanceState)
+    }
+
+    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        serviceBound = savedInstanceState.getBoolean("ServiceState")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (serviceBound) {
+            unbindService(serviceConnection)
+            //service is active
+            player.stopSelf()
         }
     }
 
