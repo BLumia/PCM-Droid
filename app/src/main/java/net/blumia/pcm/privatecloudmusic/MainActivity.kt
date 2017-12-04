@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if (serviceBound) {
             unbindService(serviceConnection)
             //service is active
-            player.stopSelf()
+            player!!.stopSelf()
         }
     }
 
