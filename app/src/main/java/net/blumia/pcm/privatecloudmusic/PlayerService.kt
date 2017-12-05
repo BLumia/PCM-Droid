@@ -17,13 +17,13 @@ import android.support.v4.media.MediaMetadataCompat
 import android.graphics.BitmapFactory
 import android.content.IntentFilter
 import android.content.BroadcastReceiver
+import android.media.AudioAttributes
 import android.telephony.TelephonyManager
 import android.telephony.PhoneStateListener
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.media.app.NotificationCompat.MediaStyle
 
 
@@ -166,7 +166,10 @@ open class PlayerService : Service(),
         //Reset so that the MediaPlayer is not pointing to another data source
         mediaPlayer!!.reset()
 
-        mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        mediaPlayer!!.setAudioAttributes(AudioAttributes.Builder()
+                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build())
         try {
             // Set the data source to the mediaFile location
             mediaPlayer!!.setDataSource(mediaFileUriStr)
@@ -240,6 +243,7 @@ open class PlayerService : Service(),
 
     private fun requestAudioFocus(): Boolean {
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        // https://stackoverflow.com/questions/9227645/is-there-any-equivalent-function-of-requestaudiofocus-in-android-api-level-7
         val result = audioManager!!.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
         //Could not gain focus
@@ -470,13 +474,13 @@ open class PlayerService : Service(),
         val name = "Media playback" as CharSequence
         // The user-visible description of the channel.
         val description = "Media playback controls"
-        val importance = NotificationManager.IMPORTANCE_LOW;
-        var mChannel = NotificationChannel(id, name, importance);
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val mChannel = NotificationChannel(id, name, importance)
         // Configure the notification channel.
-        mChannel.description = description;
-        mChannel.setShowBadge(false);
-        mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC;
-        mNotificationManager.createNotificationChannel(mChannel);
+        mChannel.description = description
+        mChannel.setShowBadge(false)
+        mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        mNotificationManager.createNotificationChannel(mChannel)
     }
 
     private fun removeNotification() {
@@ -517,16 +521,12 @@ open class PlayerService : Service(),
         if (playbackAction == null || playbackAction.action == null) return
 
         val actionString = playbackAction.action
-        if (actionString!!.equals(ACTION_PLAY, ignoreCase = true)) {
-            transportControls!!.play()
-        } else if (actionString.equals(ACTION_PAUSE, ignoreCase = true)) {
-            transportControls!!.pause()
-        } else if (actionString.equals(ACTION_NEXT, ignoreCase = true)) {
-            transportControls!!.skipToNext()
-        } else if (actionString.equals(ACTION_PREVIOUS, ignoreCase = true)) {
-            transportControls!!.skipToPrevious()
-        } else if (actionString.equals(ACTION_STOP, ignoreCase = true)) {
-            transportControls!!.stop()
+        when {
+            actionString!!.equals(ACTION_PLAY, ignoreCase = true) -> transportControls!!.play()
+            actionString.equals(ACTION_PAUSE, ignoreCase = true) -> transportControls!!.pause()
+            actionString.equals(ACTION_NEXT, ignoreCase = true) -> transportControls!!.skipToNext()
+            actionString.equals(ACTION_PREVIOUS, ignoreCase = true) -> transportControls!!.skipToPrevious()
+            actionString.equals(ACTION_STOP, ignoreCase = true) -> transportControls!!.stop()
         }
     }
 }
