@@ -1,6 +1,6 @@
 package net.blumia.pcm.privatecloudmusic
 
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
@@ -19,9 +19,12 @@ import android.content.IntentFilter
 import android.content.BroadcastReceiver
 import android.telephony.TelephonyManager
 import android.telephony.PhoneStateListener
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.support.v7.app.NotificationCompat
+import android.os.Build
+import android.support.annotation.RequiresApi
+import android.support.v4.app.NotificationCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.res.ResourcesCompat
+import android.support.v4.media.app.NotificationCompat.MediaStyle
 
 
 /**
@@ -65,7 +68,8 @@ open class PlayerService : Service(),
         const val ACTION_PREVIOUS = "net.blumia.pcm.privatecloudmusic.ACTION_PREVIOUS"
         const val ACTION_NEXT = "net.blumia.pcm.privatecloudmusic.ACTION_NEXT"
         const val ACTION_STOP = "net.blumia.pcm.privatecloudmusic.ACTION_STOP"
-        //AudioPlayer notification ID
+        //AudioPlayer Channel ID and notification ID
+        private const val CHANNEL_ID = "net.blumia.pcm.MEDIA_PLAYBACK_CHANNEL"
         private const val NOTIFICATION_ID = 616
     }
 
@@ -428,16 +432,19 @@ open class PlayerService : Service(),
                 R.drawable.notification_bg) //replace with your own image
 
         // Create a new Notification
-        val notificationBuilder = NotificationCompat.Builder(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createChannel()
+        }
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
                 .setShowWhen(false)
                 // Set the Notification style
-                .setStyle(NotificationCompat.MediaStyle()
+                .setStyle(MediaStyle()
                         // Attach our MediaSession token
                         .setMediaSession(mediaSession!!.sessionToken)
                         // Show our playback controls in the compact notification view.
                         .setShowActionsInCompactView(0, 1, 2))
                 // Set the Notification color
-                .setColor(resources.getColor(R.color.colorPrimary))
+                .setColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
                 // Set the large and small icons
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)
@@ -451,6 +458,25 @@ open class PlayerService : Service(),
                 .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2)) as NotificationCompat.Builder
 
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createChannel() {
+        val mNotificationManager = applicationContext
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // The id of the channel.
+        val id = CHANNEL_ID
+        // The user-visible name of the channel.
+        val name = "Media playback" as CharSequence
+        // The user-visible description of the channel.
+        val description = "Media playback controls"
+        val importance = NotificationManager.IMPORTANCE_LOW;
+        var mChannel = NotificationChannel(id, name, importance);
+        // Configure the notification channel.
+        mChannel.description = description;
+        mChannel.setShowBadge(false);
+        mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC;
+        mNotificationManager.createNotificationChannel(mChannel);
     }
 
     private fun removeNotification() {
