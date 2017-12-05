@@ -28,9 +28,9 @@ import java.io.IOException
 import java.net.URL
 import android.content.ComponentName
 import android.content.Context
-import android.widget.Toast
 import android.os.IBinder
 import android.content.ServiceConnection
+import org.jetbrains.anko.toast
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -40,6 +40,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var player: PlayerService? = null
     var serviceBound = false
 
+    companion object {
+        const val Broadcast_PLAY_NEW_AUDIO = "net.blumia.pcm.privatecloudmusic.PlayNewAudio"
+    }
+
     //Binding this Client to the AudioPlayer Service
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -48,7 +52,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             player = binder.service
             serviceBound = true
 
-            Toast.makeText(this@MainActivity, "Service Bound", Toast.LENGTH_SHORT).show()
+            toast("Service Bound")
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -267,10 +271,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             override fun onResponse(call: Call?, response: Response?) {
                 val result = response!!.body()!!.string()
-                Log.e("result", result)
+                Log.e("Response", result)
                 this@MainActivity.runOnUiThread {
-                    Log.e("Response", result)
-
                     val folderListAdapter = rv_folder_list.adapter as FolderListAdapter
                     folderListAdapter.updateListFromJsonString(result)
                     folderListAdapter.notifyDataSetChanged()
@@ -305,6 +307,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             //Service is active
             //Send media with BroadcastReceiver
+            val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
+            broadcastIntent.putExtra("media", media)
+            sendBroadcast(broadcastIntent)
         }
     }
 }

@@ -9,7 +9,7 @@ import android.content.SharedPreferences
 class Prefs(context: Context) {
 
     companion object {
-        const val PREFS_FILENAME: String = "net.blumia.pcm.privatecloudmusic.prefs"
+        const val PREFS_FILENAME = "net.blumia.pcm.privatecloudmusic.prefs"
         const val CUR_SRV_INDEX = "current_selected_server"
     }
 
