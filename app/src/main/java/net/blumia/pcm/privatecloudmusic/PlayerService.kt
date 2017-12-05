@@ -30,7 +30,9 @@ import android.support.v4.media.app.NotificationCompat.MediaStyle
 /**
  * Created by wzc78 on 2017/12/4.
  */
-open class PlayerService : Service(),
+// TODO: google recommend use a PlayerHolder to control(hold) MediaPlayer instance.
+// refer to https://github.com/googlesamples/android-SimpleMediaPlayer/blob/master/app/src/main/java/com/example/android/mediaplayersample/MediaPlayerHolder.java
+class PlayerService : Service(),
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener,
         MediaPlayer.OnPreparedListener,
