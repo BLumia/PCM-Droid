@@ -31,6 +31,7 @@ import android.content.Context
 import android.os.IBinder
 import android.content.ServiceConnection
 import com.google.gson.Gson
+import org.jetbrains.anko.db.delete
 import org.jetbrains.anko.toast
 
 
@@ -78,8 +79,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val serverIconListAdapter = ServerIconListAdapter(this)
         serverIconListAdapter.setOnItemClickListener(object: ServerIconListAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
-                prefs!!.curSrvIndex = position
                 curServerItem = serverIconListAdapter.getItem(position)
+                if (curServerItem!!.type == ServerType.ADD_SRV) return
+                prefs!!.curSrvIndex = position
                 fetchFolderList(curServerItem!!)
             }
         })
@@ -147,6 +149,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         }
                         R.id.mi_delete_server -> run {
                             Log.e("test", "delete srv")
+                            removeServerItemFromDB(curServerItem)
                         }
                     }
                     true
@@ -203,6 +206,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         return srvList
+    }
+
+    private fun removeServerItemFromDB(item: ServerItem?) {
+        if (item == null) return
+        database.use {
+            delete(DB_TABLE_SRV_LIST, "id = {index}", "index" to item.index)
+        }
+        fetchSrvList()
     }
 
     private fun songItemOnClick(item: MusicItem, position: Int) {
