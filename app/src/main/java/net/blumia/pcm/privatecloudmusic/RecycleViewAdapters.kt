@@ -18,9 +18,11 @@ import java.net.URLDecoder
 /**
  * Created by wzc78 on 2017/11/30.
  */
-class ServerIconListAdapter(activity: MainActivity) : RecyclerView.Adapter<ServerIconListAdapter.ViewHolder>() {
+class ServerIconListAdapter(private val activity: MainActivity) : RecyclerView.Adapter<ServerIconListAdapter.ViewHolder>() {
 
     private var list : List<Map<String, Any?>> = activity.getServerListDataFromDB()
+        get() = activity.getServerListDataFromDB()
+
     private var mOnItemClickListener: OnItemClickListener? = null
 
     interface OnItemClickListener {

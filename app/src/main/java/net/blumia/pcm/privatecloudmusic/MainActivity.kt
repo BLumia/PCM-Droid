@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     companion object {
         const val Broadcast_PLAY_NEW_AUDIO = "net.blumia.pcm.privatecloudmusic.PlayNewAudio"
+        const val ADD_SERVER_REQUEST_CODE = 616
     }
 
     //Binding this Client to the AudioPlayer Service
@@ -106,17 +107,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
 
-        val serverCnt = serverIconListAdapter.itemCount
-        if (serverCnt > 0) {
-            curServerItem = if (prefs!!.curSrvIndex in 0..(serverCnt - 1)) serverIconListAdapter.getItem(prefs!!.curSrvIndex)
-                            else {
-                                prefs!!.curSrvIndex = 0
-                                serverIconListAdapter.getItem(0)
-                            }
-            fetchFolderList(curServerItem!!)
-        } else {
-            // open add server activity?
-        }
+        fetchSrvList()
     }
 
     override fun onBackPressed() {
@@ -185,6 +176,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             unbindService(serviceConnection)
             //service is active
             player!!.stopSelf()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        toast("onActivityResult entered" + resultCode)
+        if (resultCode == ADD_SERVER_REQUEST_CODE) {
+            fetchSrvList()
         }
     }
 
@@ -293,9 +292,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         })
     }
 
+    private fun fetchSrvList() {
+        val serverIconListAdapter = rv_server_icon_list.adapter as ServerIconListAdapter
+        serverIconListAdapter.notifyDataSetChanged() // aww..
+        val serverCnt = serverIconListAdapter.itemCount
+        if (serverCnt > 0) {
+            curServerItem = if (prefs!!.curSrvIndex in 0..(serverCnt - 1)) serverIconListAdapter.getItem(prefs!!.curSrvIndex)
+            else {
+                prefs!!.curSrvIndex = 0
+                serverIconListAdapter.getItem(0)
+            }
+            fetchFolderList(curServerItem!!)
+        } else {
+            // open add server activity?
+        }
+    }
+
     private fun jumpToAddServerActivity() {
         val intent = Intent(this, AddServerActivity::class.java)
-        startActivity(intent)
+        startActivityForResult(intent, ADD_SERVER_REQUEST_CODE)
     }
 
     private fun jumpToSettingActivity() {

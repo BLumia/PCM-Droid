@@ -30,7 +30,7 @@ class Prefs(context: Context) {
     var curWebFileRelativePath: String
         get() = prefs.getString(CUR_WEB_FILE_RELATIVE_PATH, "")
         set(value) = prefs.edit().putString(CUR_WEB_FILE_RELATIVE_PATH, value).apply()
-    var _playlist: String
+    private var _playlist: String
         get() = prefs.getString(PLAY_LIST, "") // default value issue...
         set(value) = prefs.edit().putString(PLAY_LIST, value).apply()
     var playlist: ArrayList<MusicItem>

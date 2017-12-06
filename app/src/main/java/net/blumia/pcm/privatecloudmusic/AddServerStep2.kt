@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
 import android.content.ContentValues
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -15,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.pager_add_server_step2.view.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
-import org.jetbrains.anko.doAsync
 
 /**
  * Created by wzc78 on 2017/11/29.
@@ -177,6 +177,8 @@ class AddServerStep2 : Fragment() {
 
             if (success!!) {
                 Toast.makeText(view!!.context, R.string.placeholder, Toast.LENGTH_SHORT) // FIXME: toast not shown
+                val intent = Intent()//.putExtra("asd","asd")
+                activity.setResult(616, intent)
                 activity.finish()
             } else {
                 view!!.prompt_api_url.error = getString(R.string.error_incorrect_password)
