@@ -48,6 +48,8 @@ class PlayerService : Service(),
     private var mediaFileUriStr: String? = null
     //audio focus
     private var audioManager: AudioManager? = null
+    private var playlist: ArrayList<MusicItem>? = null
+    private var prefs: Prefs? = null
 
     //Handle incoming phone calls
     private var ongoingCall = false
@@ -87,6 +89,7 @@ class PlayerService : Service(),
         registerBecomingNoisyReceiver()
         //Listen for new Audio to play -- BroadcastReceiver
         register_playNewAudio()
+        prefs = Prefs(this)
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -97,7 +100,10 @@ class PlayerService : Service(),
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         try {
             //An audio file is passed to the service through putExtra();
-            mediaFileUriStr = intent.extras!!.getString("media")
+            playlist = prefs!!.playlist
+            mediaFileUriStr = prefs!!.curWebFileRootPath + prefs!!.curWebFileRelativePath + '/' + playlist!![prefs!!.curSongIndex].filePathAndName
+            Log.e("playback url: ", mediaFileUriStr)
+            //mediaFileUriStr = intent.extras!!.getString("media")
         } catch (e: NullPointerException) {
             stopSelf()
         }

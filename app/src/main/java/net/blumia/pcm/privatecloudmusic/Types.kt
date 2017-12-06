@@ -40,11 +40,3 @@ data class MusicItem (
         var useRelativePath : Boolean = true,
         var type : MusicItemType
 )
-
-class ServerAnkoItem (
-        val index : Int,
-        val serverName : String,
-        val apiUrl : String,
-        val fileRootUrl : String,
-        val password : String
-)

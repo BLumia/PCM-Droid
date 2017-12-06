@@ -11,6 +11,7 @@ import org.json.JSONException
 import android.util.Log
 import kotlinx.android.synthetic.main.item_rv_music_items.view.*
 import org.json.JSONObject
+import java.io.Serializable
 import java.net.URLDecoder
 
 
@@ -170,6 +171,10 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
         return list[position]
     }
 
+    fun getPlayList(): ArrayList<MusicItem> {
+        return list
+    }
+
     fun updateListFromJsonString(json: String) {
         try {
             val jsonObj = JSONObject(json)
@@ -195,7 +200,6 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -30,6 +30,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.IBinder
 import android.content.ServiceConnection
+import com.google.gson.Gson
 import org.jetbrains.anko.toast
 
 
@@ -76,7 +77,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val serverIconListAdapter = ServerIconListAdapter(this)
         serverIconListAdapter.setOnItemClickListener(object: ServerIconListAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
-                fetchFolderList(serverIconListAdapter.getItem(position))
+                prefs!!.curSrvIndex = position
+                curServerItem = serverIconListAdapter.getItem(position)
+                fetchFolderList(curServerItem!!)
             }
         })
         rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
@@ -105,11 +108,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         val serverCnt = serverIconListAdapter.itemCount
         if (serverCnt > 0) {
-            curServerItem = if (prefs!!.curSrvIndex in 0..(serverCnt - 1)) {
-                serverIconListAdapter.getItem(prefs!!.curSrvIndex)
-            } else {
-                serverIconListAdapter.getItem(0)
-            }
+            curServerItem = if (prefs!!.curSrvIndex in 0..(serverCnt - 1)) serverIconListAdapter.getItem(prefs!!.curSrvIndex)
+                            else {
+                                prefs!!.curSrvIndex = 0
+                                serverIconListAdapter.getItem(0)
+                            }
+            fetchFolderList(curServerItem!!)
         } else {
             // open add server activity?
         }
@@ -205,8 +209,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun songItemOnClick(item: MusicItem, position: Int) {
         if (item.type == MusicItemType.MUSIC) {
             // do playback
-            Log.e("playback", "playback stuff" + position)
-            playAudio("https://pcm.blumia.cn/%E6%B5%8B%E8%AF%95/guitarvst.mp3")
+            Log.e("playback", "playback url: " + curServerItem!!.fileRootUrl + prefs!!.curWebFileRelativePath + '/' + item.filePathAndName)
+            playAudio(position)
         } else {
             // open folder, for now we ignore the relative path setting
             val type = if (item.type == MusicItemType.SUB_FOLDER) PlaylistType.FOLDER else PlaylistType.PLAYLIST
@@ -216,6 +220,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun fetchSongList(folderItem: PlaylistItem) {
         if (curServerItem == null) return
+        prefs!!.curWebFileRelativePath = folderItem.folderPath
+
         val folderOrPlaylist = if (folderItem.type == PlaylistType.FOLDER) "folder" else "playlist"
         val httpClient = OkHttpClient()
         val formBody = FormBody.Builder()
@@ -248,14 +254,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                     val songListAdapter = rv_song_list.adapter as SongListAdapter
                     songListAdapter.updateListFromJsonString(result)
+                    prefs!!.playlist = songListAdapter.getPlayList()
                     songListAdapter.notifyDataSetChanged()
-
                 }
             }
         })
     }
 
     private fun fetchFolderList(srvItem: ServerItem) {
+        prefs!!.curWebFileRootPath = srvItem.fileRootUrl.toString()
+
         val httpClient = OkHttpClient()
         val formBody = FormBody.Builder()
                 .add("do", "getfilelist")
@@ -297,18 +305,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         startActivity(intent)
     }
 
-    private fun playAudio(media: String) {
+    private fun playAudio(position: Int) {
+        prefs!!.curSongIndex = position
         //Check is service is active
         if (!serviceBound) {
             val playerIntent = Intent(this, PlayerService::class.java)
-            playerIntent.putExtra("media", media)
             startService(playerIntent)
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         } else {
             //Service is active
             //Send media with BroadcastReceiver
             val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
-            broadcastIntent.putExtra("media", media)
             sendBroadcast(broadcastIntent)
         }
     }
