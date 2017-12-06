@@ -101,7 +101,7 @@ class PlayerService : Service(),
         try {
             //An audio file is passed to the service through putExtra();
             playlist = prefs!!.playlist
-            mediaFileUriStr = prefs!!.curWebFileRootPath + prefs!!.curWebFileRelativePath + '/' + playlist!![prefs!!.curSongIndex].filePathAndName
+            mediaFileUriStr = getFileUrl()
             Log.e("playback url: ", mediaFileUriStr)
             //mediaFileUriStr = intent.extras!!.getString("media")
         } catch (e: NullPointerException) {
@@ -160,6 +160,10 @@ class PlayerService : Service(),
     override fun onPrepared(mp: MediaPlayer) {
         //Invoked when the media source is ready for playback.
         playMedia()
+    }
+
+    private fun getFileUrl(): String {
+        return prefs!!.curWebFileRootPath + prefs!!.curWebFileRelativePath + '/' + playlist!![prefs!!.curSongIndex].filePathAndName
     }
 
     private fun initMediaPlayer() {
@@ -403,7 +407,7 @@ class PlayerService : Service(),
             if (true/*audioIndex !== -1 && audioIndex < audioList.size()*/) {
                 //index is in a valid range
                 //activeAudio = audioList.get(audioIndex)
-                mediaFileUriStr = intent.extras!!.getString("media")
+                mediaFileUriStr = getFileUrl()
             } else {
                 stopSelf()
             }
@@ -447,6 +451,7 @@ class PlayerService : Service(),
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createChannel()
         }
+        val nowPlayingItem = playlist!![prefs!!.curSongIndex]
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
                 .setShowWhen(false)
                 // Set the Notification style
@@ -463,7 +468,7 @@ class PlayerService : Service(),
                 // Set Notification content information
                 .setContentText("activeAudio.getArtist()")
                 .setContentTitle("activeAudio.getAlbum()")
-                .setContentInfo("activeAudio.getTitle()")
+                .setContentInfo(nowPlayingItem.name)
                 // Add playback actions
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
                 .addAction(notificationAction, "pause", play_pauseAction)

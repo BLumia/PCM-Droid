@@ -103,12 +103,15 @@ class AvatarView : View {
     }
 
     private fun invalidateTextPaintAndMeasurements() {
+        //val fontMetrics = mTextPaint!!.fontMetrics
         mTextPaint!!.color = mTextColor
-        mTextPaint!!.textSize = 40f
-        mTextWidth = mTextPaint!!.measureText(mTextString)
+        mTextPaint!!.textSize = 20f * resources.displayMetrics.density
 
-        val fontMetrics = mTextPaint!!.fontMetrics
-        mTextHeight = fontMetrics.bottom
+        val rect = Rect()
+        mTextPaint!!.getTextBounds(textString, 0, textString!!.length, rect)
+
+        mTextWidth = rect.width().toFloat()//mTextPaint!!.measureText(mTextString)
+        mTextHeight = rect.height().toFloat()//fontMetrics.bottom
     }
 
     override fun onDraw(canvas: Canvas) {
