@@ -29,6 +29,7 @@ import org.jetbrains.anko.design.snackbar
 import java.io.IOException
 import java.net.URL
 import android.os.IBinder
+import android.os.Message
 import android.widget.Toast
 import com.google.gson.Gson
 import org.jetbrains.anko.db.delete
@@ -68,7 +69,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         prefs = Prefs(this)
-        receiver = TimeIntentReceiver(Handler())
+        receiver = TimeIntentReceiver(object: Handler() {
+            override fun handleMessage(msg: Message?) {
+                super.handleMessage(msg)
+                val intent = msg!!.obj as Intent
+                Log.e("Intent", intent.getStringExtra("curTime") + '/'
+                        + intent.getStringExtra("totalTime") + ' '
+                        + intent.getIntExtra("bufferPercent", 0).toString())
+                tv_music_cur_time.text = intent.getStringExtra("curTime")
+                tv_music_total_time.text = intent.getStringExtra("totalTime")
+                tv_music_title.text = intent.getStringExtra("songName")
+                sb_music_progressbar.max = intent.getIntExtra("musicLength", 0)
+                sb_music_progressbar.progress = intent.getIntExtra("progress", 0)
+            }
+        })
         registerReceiver(receiver, IntentFilter(PlayerService.ACTION_UPDATE_TIME))
 
         setContentView(R.layout.activity_main)
@@ -352,12 +366,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //region time intent
     class TimeIntentReceiver(private val handler: Handler): BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
-            handler.post({
-                //Toast.makeText(ctx, intent!!.getIntExtra("progress", 0), Toast.LENGTH_SHORT).show()
-                Log.e("Intent", intent!!.getStringExtra("curTime") + '/'
-                        + intent!!.getStringExtra("totalTime") + ' '
-                        + intent!!.getIntExtra("bufferPercent", 0).toString())
-            })
+            var message = Message()
+            message.obj = intent
+            handler.sendMessage(message)
         }
     }
     //endregion
