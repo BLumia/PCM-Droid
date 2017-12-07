@@ -1,7 +1,8 @@
 package net.blumia.pcm.privatecloudmusic
 
-import android.content.Intent
+import android.content.*
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -12,6 +13,7 @@ import android.view.View
 import android.widget.PopupMenu
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_container.*
+import kotlinx.android.synthetic.main.player_controlbar.*
 import android.preference.PreferenceActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.LinearLayout
@@ -26,10 +28,8 @@ import org.jetbrains.anko.db.select
 import org.jetbrains.anko.design.snackbar
 import java.io.IOException
 import java.net.URL
-import android.content.ComponentName
-import android.content.Context
 import android.os.IBinder
-import android.content.ServiceConnection
+import android.widget.Toast
 import com.google.gson.Gson
 import org.jetbrains.anko.db.delete
 import org.jetbrains.anko.toast
@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var curServerItem: ServerItem? = null
     private var prefs: Prefs? = null
     private var player: PlayerService? = null
+    private var receiver: TimeIntentReceiver? = null
     var serviceBound = false
 
     companion object {
@@ -67,6 +68,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         prefs = Prefs(this)
+        receiver = TimeIntentReceiver(Handler())
+        registerReceiver(receiver, IntentFilter(PlayerService.ACTION_UPDATE_TIME))
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -345,4 +348,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             sendBroadcast(broadcastIntent)
         }
     }
+
+    //region time intent
+    class TimeIntentReceiver(private val handler: Handler): BroadcastReceiver() {
+        override fun onReceive(ctx: Context?, intent: Intent?) {
+            handler.post({
+                //Toast.makeText(ctx, intent!!.getIntExtra("progress", 0), Toast.LENGTH_SHORT).show()
+                Log.e("Intent", intent!!.getStringExtra("curTime") + '/'
+                        + intent!!.getStringExtra("totalTime") + ' '
+                        + intent!!.getIntExtra("bufferPercent", 0).toString())
+            })
+        }
+    }
+    //endregion
 }

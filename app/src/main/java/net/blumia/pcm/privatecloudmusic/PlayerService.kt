@@ -25,6 +25,9 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.media.app.NotificationCompat.MediaStyle
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -36,12 +39,17 @@ class PlayerService : Service(),
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener,
         MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnBufferingUpdateListener,
         AudioManager.OnAudioFocusChangeListener{
 
     // Binder given to clients
     private val iBinder = LocalBinder()
+    private var mExecutor: ScheduledExecutorService? = null
+    private var mSeekbarPositionUpdateTask: Runnable? = null
+    private var mTimeIntent: Intent? = null
 
     private var mediaPlayer: MediaPlayer? = null
+    private var mBufferPercent: Int = 0
     //Used to pause/resume MediaPlayer
     private var resumePosition: Int = 0
     //path to the audio file
@@ -72,9 +80,11 @@ class PlayerService : Service(),
         const val ACTION_PREVIOUS = "net.blumia.pcm.privatecloudmusic.ACTION_PREVIOUS"
         const val ACTION_NEXT = "net.blumia.pcm.privatecloudmusic.ACTION_NEXT"
         const val ACTION_STOP = "net.blumia.pcm.privatecloudmusic.ACTION_STOP"
+        const val ACTION_UPDATE_TIME = "net.blumia.pcm.privatecloudmusic.ACTION_UPDATE_TIME"
         //AudioPlayer Channel ID and notification ID
         private const val CHANNEL_ID = "net.blumia.pcm.MEDIA_PLAYBACK_CHANNEL"
         private const val NOTIFICATION_ID = 616
+        private const val PLAYBACK_POSITION_REFRESH_INTERVAL_MS = 250L
     }
 
     override fun onCreate() {
@@ -89,6 +99,8 @@ class PlayerService : Service(),
         registerBecomingNoisyReceiver()
         //Listen for new Audio to play -- BroadcastReceiver
         register_playNewAudio()
+
+        mTimeIntent = Intent(ACTION_UPDATE_TIME)
         prefs = Prefs(this)
     }
 
@@ -162,9 +174,15 @@ class PlayerService : Service(),
         playMedia()
     }
 
+    override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
+        mBufferPercent = percent * mp!!.duration /100
+    }
+
     private fun getFileUrl(): String {
         return prefs!!.curWebFileRootPath + prefs!!.curWebFileRelativePath + '/' + playlist!![prefs!!.curSongIndex].filePathAndName
     }
+
+    //region media playback
 
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer()
@@ -172,7 +190,7 @@ class PlayerService : Service(),
         mediaPlayer!!.setOnCompletionListener(this)
         mediaPlayer!!.setOnErrorListener(this)
         mediaPlayer!!.setOnPreparedListener(this)
-        //mediaPlayer!!.setOnBufferingUpdateListener(this)
+        mediaPlayer!!.setOnBufferingUpdateListener(this)
         //mediaPlayer!!.setOnSeekCompleteListener(this)
         //mediaPlayer!!.setOnInfoListener(this)
         //Reset so that the MediaPlayer is not pointing to another data source
@@ -196,6 +214,7 @@ class PlayerService : Service(),
     private fun playMedia() {
         if (!mediaPlayer!!.isPlaying) {
             mediaPlayer!!.start()
+            startUpdatingCallbackWithPosition()
         }
     }
 
@@ -203,6 +222,7 @@ class PlayerService : Service(),
         if (mediaPlayer == null) return
         if (mediaPlayer!!.isPlaying) {
             mediaPlayer!!.stop()
+            stopUpdatingCallbackWithPosition(true)
         }
     }
 
@@ -210,6 +230,7 @@ class PlayerService : Service(),
         if (mediaPlayer!!.isPlaying) {
             mediaPlayer!!.pause()
             resumePosition = mediaPlayer!!.currentPosition
+            stopUpdatingCallbackWithPosition(false)
         }
     }
 
@@ -217,8 +238,11 @@ class PlayerService : Service(),
         if (!mediaPlayer!!.isPlaying) {
             mediaPlayer!!.seekTo(resumePosition)
             mediaPlayer!!.start()
+            startUpdatingCallbackWithPosition()
         }
     }
+
+    //endregion
 
     inner class LocalBinder : Binder() {
         val service: PlayerService
@@ -541,5 +565,55 @@ class PlayerService : Service(),
             actionString.equals(ACTION_PREVIOUS, ignoreCase = true) -> transportControls!!.skipToPrevious()
             actionString.equals(ACTION_STOP, ignoreCase = true) -> transportControls!!.stop()
         }
+    }
+
+    private fun startUpdatingCallbackWithPosition() {
+        if (mExecutor == null) {
+            mExecutor = Executors.newSingleThreadScheduledExecutor()
+        }
+        if (mSeekbarPositionUpdateTask == null) {
+            mSeekbarPositionUpdateTask = Runnable { updateProgressCallbackTask() }
+        }
+        mExecutor!!.scheduleAtFixedRate(mSeekbarPositionUpdateTask, 0, PLAYBACK_POSITION_REFRESH_INTERVAL_MS, TimeUnit.MILLISECONDS)
+    }
+
+    // Reports media playback position to mPlaybackProgressCallback.
+    private fun stopUpdatingCallbackWithPosition(resetUIPlaybackPosition: Boolean) {
+        if (mExecutor != null) {
+            mExecutor!!.shutdownNow()
+            mExecutor = null
+            mSeekbarPositionUpdateTask = null
+
+            updateProgressCallbackTask()
+        }
+    }
+
+    private fun updateProgressCallbackTask() {
+        if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
+            val currentPosition = mediaPlayer!!.currentPosition
+            val musicLength = mediaPlayer!!.duration
+
+            mTimeIntent?.putExtra("bufferPercent", mBufferPercent)
+            mTimeIntent?.putExtra("progress", currentPosition)
+            mTimeIntent?.putExtra("musicLength", musicLength)
+            mTimeIntent?.putExtra("totalTime", toTime(musicLength))
+            mTimeIntent?.putExtra("curTime", toTime(currentPosition))
+            mTimeIntent?.putExtra("songName", "dummy text")
+            sendBroadcast(mTimeIntent)
+        }
+    }
+
+    private fun toTime(time: Int): String {
+        val minute = time / 1000 / 60
+        val s = time / 1000 % 60
+        val mm = if (minute < 10)
+            "0" + minute
+        else
+            minute.toString() + ""
+        val ss = if (s < 10)
+            "0" + s
+        else
+            "" + s
+        return mm + ":" + ss
     }
 }
