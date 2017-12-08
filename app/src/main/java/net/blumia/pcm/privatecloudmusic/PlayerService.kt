@@ -362,6 +362,9 @@ class PlayerService : Service(),
     private fun skipToNext() {
 
         // do switch to next song
+        if (prefs!!.curSongIndex < (playlist!!.size - 1)) prefs!!.curSongIndex++
+        mediaFileUriStr = getFileUrl()
+        //else prefs!!.curSongIndex = first song item
 
         stopMedia()
         //reset mediaPlayer
@@ -372,6 +375,8 @@ class PlayerService : Service(),
     private fun skipToPrevious() {
 
         // do switch to prev song
+        if (prefs!!.curSongIndex > 0 && playlist!![prefs!!.curSongIndex].type == MusicItemType.MUSIC) prefs!!.curSongIndex--
+        mediaFileUriStr = getFileUrl()
 
         stopMedia()
         //reset mediaPlayer
@@ -428,9 +433,25 @@ class PlayerService : Service(),
     private val playNewAudio = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
 
+            val action = intent.getIntExtra("do", 0)
+
+            if (action != 0) {
+                when(action) {
+                    1 -> {
+                        pauseMedia()
+                    }
+                    2 -> {
+                        skipToNext()
+                    }
+                    3 -> {
+                        skipToPrevious()
+                    }
+                }
+                return
+            }
             //Get the new media index form SharedPreferences
             //audioIndex = StorageUtil(applicationContext).loadAudioIndex()
-            if (true/*audioIndex !== -1 && audioIndex < audioList.size()*/) {
+            if (prefs?.playlist != null) {
                 //index is in a valid range
                 //activeAudio = audioList.get(audioIndex)
                 mediaFileUriStr = getFileUrl()

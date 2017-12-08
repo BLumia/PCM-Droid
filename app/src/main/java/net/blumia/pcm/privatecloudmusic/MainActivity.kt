@@ -128,6 +128,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_serverPopupMenu.setOnClickListener(this)
         btn_options.setOnClickListener(this)
 
+        btn_music_play_pause.setOnClickListener(this)
+        btn_music_prev.setOnClickListener(this)
+        btn_music_next.setOnClickListener(this)
+
         fetchSrvList()
     }
 
@@ -178,6 +182,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn_options -> run {
                 jumpToSettingActivity()
                 drawer_layout.closeDrawer(GravityCompat.START)
+            }
+            R.id.btn_music_play_pause -> run {
+                /*if () */pauseAudio()
+            }
+            R.id.btn_music_prev -> run {
+                prev()
+            }
+            R.id.btn_music_next -> run {
+                next()
             }
         }
     }
@@ -363,6 +376,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
             sendBroadcast(broadcastIntent)
         }
+    }
+
+    private fun pauseAudio() {
+        //Check is service is active
+        if (!serviceBound) return
+
+        //Service is active
+        //Send media with BroadcastReceiver
+        val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
+        broadcastIntent.putExtra("do", 1) // pause
+        sendBroadcast(broadcastIntent)
+    }
+
+    private fun prev() {
+        if (!serviceBound) return
+        val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
+        broadcastIntent.putExtra("do", 3) // prev
+        sendBroadcast(broadcastIntent)
+    }
+
+    private fun next() {
+        if (!serviceBound) return
+        val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
+        broadcastIntent.putExtra("do", 2) // next
+        sendBroadcast(broadcastIntent)
     }
 
     //region time intent
