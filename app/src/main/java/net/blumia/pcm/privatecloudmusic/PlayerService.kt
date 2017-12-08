@@ -53,6 +53,7 @@ class PlayerService : Service(),
     //Used to pause/resume MediaPlayer
     private var resumePosition: Int = 0
     //path to the audio file
+    private var mediaFileItem: MusicItem? = null
     private var mediaFileUriStr: String? = null
     //audio focus
     private var audioManager: AudioManager? = null
@@ -179,7 +180,8 @@ class PlayerService : Service(),
     }
 
     private fun getFileUrl(): String {
-        return prefs!!.curWebFileRootPath + prefs!!.curWebFileRelativePath + '/' + playlist!![prefs!!.curSongIndex].filePathAndName
+        mediaFileItem = playlist!![prefs!!.curSongIndex]
+        return prefs!!.curWebFileRootPath + prefs!!.curWebFileRelativePath + '/' + mediaFileItem!!.filePathAndName
     }
 
     //region media playback
@@ -490,9 +492,8 @@ class PlayerService : Service(),
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)
                 // Set Notification content information
-                .setContentText("activeAudio.getArtist()")
-                .setContentTitle("activeAudio.getAlbum()")
-                .setContentInfo(nowPlayingItem.name)
+                .setContentText(nowPlayingItem.name)
+                .setContentTitle("Private Cloud Music")
                 // Add playback actions
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
                 .addAction(notificationAction, "pause", play_pauseAction)
@@ -572,33 +573,36 @@ class PlayerService : Service(),
             mExecutor = Executors.newSingleThreadScheduledExecutor()
         }
         if (mSeekbarPositionUpdateTask == null) {
-            mSeekbarPositionUpdateTask = Runnable { updateProgressCallbackTask() }
+            mSeekbarPositionUpdateTask = Runnable { updateProgressCallbackTask(false) }
         }
         mExecutor!!.scheduleAtFixedRate(mSeekbarPositionUpdateTask, 0, PLAYBACK_POSITION_REFRESH_INTERVAL_MS, TimeUnit.MILLISECONDS)
     }
 
     // Reports media playback position to mPlaybackProgressCallback.
     private fun stopUpdatingCallbackWithPosition(resetUIPlaybackPosition: Boolean) {
+        Log.e("stop", "stopUpdatingCallbackWithPosition($resetUIPlaybackPosition)")
+
         if (mExecutor != null) {
             mExecutor!!.shutdownNow()
             mExecutor = null
             mSeekbarPositionUpdateTask = null
 
-            updateProgressCallbackTask()
+            updateProgressCallbackTask(resetUIPlaybackPosition)
         }
     }
 
-    private fun updateProgressCallbackTask() {
+    private fun updateProgressCallbackTask(resetUIPlaybackPosition: Boolean) {
         if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
             val currentPosition = mediaPlayer!!.currentPosition
             val musicLength = mediaPlayer!!.duration
 
+            mTimeIntent?.putExtra("isPlaying", if (!resetUIPlaybackPosition) mediaPlayer!!.isPlaying else false)
             mTimeIntent?.putExtra("bufferPercent", mBufferPercent)
-            mTimeIntent?.putExtra("progress", currentPosition)
+            mTimeIntent?.putExtra("progress", if (resetUIPlaybackPosition) musicLength else currentPosition)
             mTimeIntent?.putExtra("musicLength", musicLength)
             mTimeIntent?.putExtra("totalTime", toTime(musicLength))
             mTimeIntent?.putExtra("curTime", toTime(currentPosition))
-            mTimeIntent?.putExtra("songName", "dummy text")
+            mTimeIntent?.putExtra("songName", mediaFileItem!!.name)
             sendBroadcast(mTimeIntent)
         }
     }

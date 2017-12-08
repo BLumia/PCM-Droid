@@ -30,8 +30,6 @@ import java.io.IOException
 import java.net.URL
 import android.os.IBinder
 import android.os.Message
-import android.widget.Toast
-import com.google.gson.Gson
 import org.jetbrains.anko.db.delete
 import org.jetbrains.anko.toast
 
@@ -81,6 +79,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 tv_music_title.text = intent.getStringExtra("songName")
                 sb_music_progressbar.max = intent.getIntExtra("musicLength", 0)
                 sb_music_progressbar.progress = intent.getIntExtra("progress", 0)
+                btn_music_play_pause.background = if (intent.getBooleanExtra("isPlaying", true))
+                    applicationContext.getDrawable(R.drawable.ic_pause_white_24dp)
+                else
+                    applicationContext.getDrawable(R.drawable.ic_play_arrow_white_24dp)
             }
         })
         registerReceiver(receiver, IntentFilter(PlayerService.ACTION_UPDATE_TIME))
@@ -366,7 +368,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //region time intent
     class TimeIntentReceiver(private val handler: Handler): BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
-            var message = Message()
+            val message = Message()
             message.obj = intent
             handler.sendMessage(message)
         }
