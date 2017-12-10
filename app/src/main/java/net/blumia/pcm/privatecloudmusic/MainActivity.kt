@@ -385,21 +385,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //Service is active
         //Send media with BroadcastReceiver
         val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
-        broadcastIntent.putExtra("do", 1) // pause
+        broadcastIntent.putExtra("do", PlayerService.DO_PAUSE) // pause
         sendBroadcast(broadcastIntent)
     }
 
     private fun prev() {
         if (!serviceBound) return
         val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
-        broadcastIntent.putExtra("do", 3) // prev
+        broadcastIntent.putExtra("do", PlayerService.DO_PREV) // prev
         sendBroadcast(broadcastIntent)
     }
 
     private fun next() {
         if (!serviceBound) return
         val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
-        broadcastIntent.putExtra("do", 2) // next
+        broadcastIntent.putExtra("do", PlayerService.DO_NEXT) // next
         sendBroadcast(broadcastIntent)
     }
 

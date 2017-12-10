@@ -21,6 +21,7 @@ class PlayerHolder(context: Context): PlayerAdapter,
     private var mPlaybackInfoListener: PlaybackInfoListener? = null
     private var mExecutor: ScheduledExecutorService? = null
     private var mSeekbarPositionUpdateTask: Runnable? = null
+    var mCurrentLoadedFileUrl: String = "File not loaded"
 
     companion object {
         private const val PLAYBACK_POSITION_REFRESH_INTERVAL_MS = 250L
@@ -34,6 +35,9 @@ class PlayerHolder(context: Context): PlayerAdapter,
         if (mMediaPlayer != null) return
         mMediaPlayer = MediaPlayer()
         mMediaPlayer!!.setOnCompletionListener(this)
+        mMediaPlayer!!.setOnErrorListener(this)
+        mMediaPlayer!!.setOnPreparedListener(this)
+        mMediaPlayer!!.setOnBufferingUpdateListener(this)
     }
 
     override fun release() {
@@ -44,11 +48,13 @@ class PlayerHolder(context: Context): PlayerAdapter,
 
     override fun load(uri: String) {
         init()
+        mMediaPlayer!!.reset()
         try {
             mMediaPlayer!!.setDataSource(uri)
         } catch (e: Exception) {
             Log.e("MediaPlayer", e.toString())
         }
+        mCurrentLoadedFileUrl = uri
         mMediaPlayer!!.prepareAsync()
     }
 
