@@ -15,6 +15,7 @@ class PlayerService: Service() {
     private var mPlayerHolder: PlayerHolder? = null
     private var mPlaylist: ArrayList<MusicItem>? = null
     private var mCurrentMusicItem: MusicItem? = null
+    private var mTimeIntent: Intent? = null
     private var prefs: Prefs? = null
 
     companion object {
@@ -52,8 +53,10 @@ class PlayerService: Service() {
         prefs = Prefs(this)
 
         mPlayerHolder = PlayerHolder(this)
-        //playbackInfoListener
+        mPlayerHolder!!.setPlaybackInfoListener(ServicePlaybackInfoListener())
         mPlayerHolder!!.init()
+
+        mTimeIntent = Intent(ACTION_UPDATE_TIME)
         registerPlayActionBroadcastReceiver()
     }
 
@@ -85,6 +88,24 @@ class PlayerService: Service() {
 
         return super.onStartCommand(intent, flags, startId)
     }
+
+    //region Listeners
+
+    inner class ServicePlaybackInfoListener: PlaybackInfoListener {
+        override fun onPositionChanged(pos: Int, duration: Int) {
+            super.onPositionChanged(pos, duration)
+            if (mPlayerHolder == null) return
+            mTimeIntent?.putExtra("isPlaying", mPlayerHolder!!.isPlaying())
+            mTimeIntent?.putExtra("progress", pos)
+            mTimeIntent?.putExtra("musicLength", duration)
+            mTimeIntent?.putExtra("totalTime", toTime(duration))
+            mTimeIntent?.putExtra("curTime", toTime(pos))
+            mTimeIntent?.putExtra("songName", mCurrentMusicItem!!.name)
+            sendBroadcast(mTimeIntent)
+        }
+    }
+
+    //endregion
 
     //region BroadcastReceivers
 
@@ -120,6 +141,20 @@ class PlayerService: Service() {
     private fun getFileUrl(): String {
         mCurrentMusicItem = mPlaylist!![prefs!!.curSongIndex]
         return prefs!!.curWebFileRootPath + prefs!!.curWebFileRelativePath + '/' + mCurrentMusicItem!!.filePathAndName
+    }
+
+    private fun toTime(time: Int): String {
+        val minute = time / 1000 / 60
+        val s = time / 1000 % 60
+        val mm = if (minute < 10)
+            "0" + minute
+        else
+            minute.toString() + ""
+        val ss = if (s < 10)
+            "0" + s
+        else
+            "" + s
+        return mm + ":" + ss
     }
 
     //endregion

@@ -3,7 +3,7 @@ package net.blumia.pcm.privatecloudmusic
 /**
  * Created by Gary Wang on 2017/12/9.
  */
-class PlaybackInfoListener {
+interface PlaybackInfoListener {
 
     enum class PlaybackState(val value: Int){
         INVALID(-1),
@@ -17,7 +17,7 @@ class PlaybackInfoListener {
 
     fun onPlaybackCompleted() {}
 
-    fun onPositionChanged(pos: Int) {}
+    fun onPositionChanged(pos: Int, duration: Int) {}
 
     fun onBufferUpdated(bufferPos: Int, duration: Int) {}
 

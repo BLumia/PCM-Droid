@@ -107,14 +107,15 @@ class PlayerHolder(context: Context): PlayerAdapter,
         mExecutor = null
         mSeekbarPositionUpdateTask = null
         if (resetUIPlaybackPosition) {
-            mPlaybackInfoListener?.onPositionChanged(0)
+            mPlaybackInfoListener?.onPositionChanged(0, mMediaPlayer!!.duration)
         }
     }
 
     private fun updateProgressCallbackTask() {
         if (mMediaPlayer == null || !mMediaPlayer!!.isPlaying) return
-        val curPos = mMediaPlayer!!.currentPosition
-        mPlaybackInfoListener?.onPositionChanged(curPos)
+        mPlaybackInfoListener?.onPositionChanged(
+                mMediaPlayer!!.currentPosition,
+                mMediaPlayer!!.duration)
     }
 
     //region MediaPlayer Listeners
