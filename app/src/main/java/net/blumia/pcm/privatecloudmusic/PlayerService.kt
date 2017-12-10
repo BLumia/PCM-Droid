@@ -23,6 +23,7 @@ class PlayerService: Service() {
         const val DO_PAUSE = 1
         const val DO_NEXT = 2
         const val DO_PREV = 3
+        const val DO_RESUME = 4
         const val ACTION_UPDATE_TIME = "net.blumia.pcm.privatecloudmusic.ACTION_UPDATE_TIME"
         //AudioPlayer Channel ID and notification ID
         private const val CHANNEL_ID = "net.blumia.pcm.MEDIA_PLAYBACK_CHANNEL"
@@ -118,6 +119,7 @@ class PlayerService: Service() {
                         DO_PAUSE -> mPlayerHolder!!.pause()
                         DO_NEXT -> {}
                         DO_PREV -> {}
+                        DO_RESUME -> mPlayerHolder!!.play()
                     }
                     return
                 }
@@ -144,6 +146,7 @@ class PlayerService: Service() {
     }
 
     private fun toTime(time: Int): String {
+        if (time < 0) return "OwO"
         val minute = time / 1000 / 60
         val s = time / 1000 % 60
         val mm = if (minute < 10)

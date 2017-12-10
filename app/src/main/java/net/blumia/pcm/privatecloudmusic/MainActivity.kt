@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var prefs: Prefs? = null
     private var player: PlayerService? = null
     private var receiver: TimeIntentReceiver? = null
+    private var mIsPlaying: Boolean = false
     var serviceBound = false
 
     companion object {
@@ -79,7 +80,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 tv_music_title.text = intent.getStringExtra("songName")
                 sb_music_progressbar.max = intent.getIntExtra("musicLength", 0)
                 sb_music_progressbar.progress = intent.getIntExtra("progress", 0)
-                btn_music_play_pause.background = if (intent.getBooleanExtra("isPlaying", true))
+                mIsPlaying = intent.getBooleanExtra("isPlaying", true)
+                btn_music_play_pause.background = if (mIsPlaying)
                     applicationContext.getDrawable(R.drawable.ic_pause_white_24dp)
                 else
                     applicationContext.getDrawable(R.drawable.ic_play_arrow_white_24dp)
@@ -184,7 +186,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 drawer_layout.closeDrawer(GravityCompat.START)
             }
             R.id.btn_music_play_pause -> run {
-                /*if () */pauseAudio()
+                if (mIsPlaying) pauseAudio() else resumeAudio()
             }
             R.id.btn_music_prev -> run {
                 prev()
@@ -386,6 +388,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //Send media with BroadcastReceiver
         val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
         broadcastIntent.putExtra("do", PlayerService.DO_PAUSE) // pause
+        sendBroadcast(broadcastIntent)
+    }
+
+    private fun resumeAudio() {
+        //Check is service is active
+        if (!serviceBound) return
+
+        //Service is active
+        //Send media with BroadcastReceiver
+        val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
+        broadcastIntent.putExtra("do", PlayerService.DO_RESUME) // resume
         sendBroadcast(broadcastIntent)
     }
 
