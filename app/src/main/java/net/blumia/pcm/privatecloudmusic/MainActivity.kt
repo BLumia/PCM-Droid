@@ -68,25 +68,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         prefs = Prefs(this)
-        receiver = TimeIntentReceiver(object: Handler() {
-            override fun handleMessage(msg: Message?) {
-                super.handleMessage(msg)
-                val intent = msg!!.obj as Intent
-                Log.e("Intent", intent.getStringExtra("curTime") + '/'
-                        + intent.getStringExtra("totalTime") + ' '
-                        + intent.getIntExtra("bufferPercent", 0).toString())
-                tv_music_cur_time.text = intent.getStringExtra("curTime")
-                tv_music_total_time.text = intent.getStringExtra("totalTime")
-                tv_music_title.text = intent.getStringExtra("songName")
-                sb_music_progressbar.max = intent.getIntExtra("musicLength", 0)
-                sb_music_progressbar.progress = intent.getIntExtra("progress", 0)
-                mIsPlaying = intent.getBooleanExtra("isPlaying", true)
-                btn_music_play_pause.background = if (mIsPlaying)
-                    applicationContext.getDrawable(R.drawable.ic_pause_white_24dp)
-                else
-                    applicationContext.getDrawable(R.drawable.ic_play_arrow_white_24dp)
-            }
-        })
+        receiver = TimeIntentReceiver(BroadcastHandler())
         registerReceiver(receiver, IntentFilter(PlayerService.ACTION_UPDATE_TIME))
 
         setContentView(R.layout.activity_main)
@@ -224,6 +206,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    // region db operate
+
     fun getServerListDataFromDB(): List<Map<String, Any?>> {
         var srvList:List<Map<String, Any?>> = ArrayList()
         database.use {
@@ -250,6 +234,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         fetchSrvList()
     }
 
+    // endregion
+
     private fun songItemOnClick(item: MusicItem, position: Int) {
         if (item.type == MusicItemType.MUSIC) {
             // do playback
@@ -261,6 +247,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             fetchSongList(PlaylistItem(item.name, item.filePathAndName, type))
         }
     }
+
+    // region fetch from web / db
 
     private fun fetchSongList(folderItem: PlaylistItem) {
         if (curServerItem == null) return
@@ -353,6 +341,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    // endregion
+
     private fun jumpToAddServerActivity() {
         val intent = Intent(this, AddServerActivity::class.java)
         startActivityForResult(intent, ADD_SERVER_REQUEST_CODE)
@@ -364,6 +354,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
         startActivity(intent)
     }
+
+    //region audio control fun
 
     private fun playAudio(position: Int) {
         prefs!!.curSongIndex = position
@@ -416,6 +408,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         sendBroadcast(broadcastIntent)
     }
 
+    //endregion
+
     //region time intent
     class TimeIntentReceiver(private val handler: Handler): BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
@@ -425,4 +419,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
     //endregion
+
+    inner class BroadcastHandler: Handler() {
+        override fun handleMessage(msg: Message?) {
+            super.handleMessage(msg)
+            val intent = msg!!.obj as Intent
+
+            val curTimeStr = intent.getStringExtra("curTime")
+            if (!curTimeStr.isNullOrEmpty()) tv_music_cur_time.text = curTimeStr
+            val totTimeStr = intent.getStringExtra("totalTime")
+            if (!totTimeStr.isNullOrEmpty()) tv_music_total_time.text = totTimeStr
+            val titleStr = intent.getStringExtra("songName")
+            if (!titleStr.isNullOrEmpty()) tv_music_title.text = titleStr
+            if (intent.hasExtra("musicLength")) sb_music_progressbar.max = intent.getIntExtra("musicLength", 0)
+            if (intent.hasExtra("progress")) sb_music_progressbar.progress = intent.getIntExtra("progress", 0)
+            if (intent.hasExtra("isPlaying")) {
+                mIsPlaying = intent.getBooleanExtra("isPlaying", true)
+                btn_music_play_pause.background = if (mIsPlaying)
+                    applicationContext.getDrawable(R.drawable.ic_pause_white_24dp)
+                else
+                    applicationContext.getDrawable(R.drawable.ic_play_arrow_white_24dp)
+            }
+        }
+    }
 }

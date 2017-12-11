@@ -76,6 +76,7 @@ class PlayerHolder(context: Context): PlayerAdapter,
         if (mMediaPlayer == null || !mMediaPlayer!!.isPlaying) return
         mMediaPlayer!!.pause()
         mPlaybackInfoListener?.onStateChanged(PlaybackInfoListener.PlaybackState.PAUSED)
+        stopUpdatingCallbackWithPosition(false)
     }
 
     override fun seekTo(pos: Int) {

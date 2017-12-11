@@ -104,6 +104,18 @@ class PlayerService: Service() {
             mTimeIntent?.putExtra("songName", mCurrentMusicItem!!.name)
             sendBroadcast(mTimeIntent)
         }
+
+        override fun onStateChanged(state: PlaybackInfoListener.PlaybackState) {
+            super.onStateChanged(state)
+            if (mPlayerHolder == null) return
+            when (state) {
+                PlaybackInfoListener.PlaybackState.PAUSED -> {
+                    mTimeIntent?.putExtra("isPlaying", false)
+                }
+                else -> {}
+            }
+            sendBroadcast(mTimeIntent)
+        }
     }
 
     //endregion
@@ -113,12 +125,27 @@ class PlayerService: Service() {
     private fun registerPlayActionBroadcastReceiver() {
         val playActionBroadcastReceiver = object: BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
+                if (mPlayerHolder == null) return
                 val action = intent!!.getIntExtra("do", DO_PLAY)
                 if (action != DO_PLAY) {
                     when(action) {
                         DO_PAUSE -> mPlayerHolder!!.pause()
-                        DO_NEXT -> {}
-                        DO_PREV -> {}
+                        DO_NEXT -> {
+                            if (mPlaylist!!.size <= prefs!!.curSongIndex + 1) return
+                            if (mPlaylist!![prefs!!.curSongIndex + 1].type == MusicItemType.MUSIC) {
+                                prefs!!.curSongIndex++
+                                mPlayerHolder!!.load(getFileUrl())
+                                mPlayerHolder!!.play()
+                            }
+                        }
+                        DO_PREV -> {
+                            if (prefs!!.curSongIndex < 1) return
+                            if (mPlaylist!![prefs!!.curSongIndex - 1].type == MusicItemType.MUSIC) {
+                                prefs!!.curSongIndex--
+                                mPlayerHolder!!.load(getFileUrl())
+                                mPlayerHolder!!.play()
+                            }
+                        }
                         DO_RESUME -> mPlayerHolder!!.play()
                     }
                     return
