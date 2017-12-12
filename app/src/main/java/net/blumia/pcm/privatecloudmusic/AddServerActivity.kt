@@ -7,11 +7,12 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import kotlinx.android.synthetic.main.activity_add_server.*
+import org.jetbrains.anko.UI
 
 /**
  * A login screen that offers login via email/password.
  */
-class AddServerActivity : AppCompatActivity() {
+class AddServerActivity : AppCompatActivity(), AddServerStep1.UrlEnteredListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -31,24 +32,38 @@ class AddServerActivity : AppCompatActivity() {
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
     }
 
+    override fun onUrlEnteredCorrectly(srvItem: ServerItem) {
+        mSectionsPagerAdapter?.onUrlEnteredCorrectly(srvItem)
+        runOnUiThread {
+            container.setCurrentItem(1, true)
+        }
+    }
+
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm), AddServerStep1.UrlEnteredListener {
+
+        private val step1: AddServerStep1 = AddServerStep1.newInstance(0)
+        private val step2: AddServerStep2 = AddServerStep2.newInstance(1)
 
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             when (position) {
-                0 -> return AddServerStep1.newInstance(position)
-                1 -> return AddServerStep2.newInstance(position)
+                0 -> return step1
+                1 -> return step2
             }
-            return AddServerStep2.newInstance(position) // should be a exception
+            return step2 // should be a exception
         }
 
         override fun getCount(): Int {
             // Show 2 total pages.
             return 2
+        }
+
+        override fun onUrlEnteredCorrectly(srvItem: ServerItem) {
+            step2.onUrlEnteredCorrectly(srvItem)
         }
     }
 }

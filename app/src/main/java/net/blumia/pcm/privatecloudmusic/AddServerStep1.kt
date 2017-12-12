@@ -3,15 +3,19 @@ package net.blumia.pcm.privatecloudmusic
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
+import android.content.Context
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.pager_add_server_step1.view.*
+import java.net.MalformedURLException
+import java.net.URL
 
 /**
  * Created by wzc78 on 2017/11/27.
@@ -21,6 +25,7 @@ class AddServerStep1 : Fragment() {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private var mAuthTask: UserLoginTask? = null
+    private var mUrlEnteredListener: UrlEnteredListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -33,6 +38,16 @@ class AddServerStep1 : Fragment() {
     private fun isUrlValid(url: String): Boolean {
         //TODO: Replace this with your own logic
         return url.isNotEmpty()
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        try {
+            mUrlEnteredListener = context as UrlEnteredListener
+        } catch (e: Exception) {
+            Log.e("Listener", e.toString())
+        }
     }
 
     /**
@@ -148,14 +163,21 @@ class AddServerStep1 : Fragment() {
 
         override fun doInBackground(vararg params: Void): Boolean? {
             // TODO: attempt authentication against a network service.
+            val apiUrl: URL?
+            val fileRootUrl: URL?
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000)
+                apiUrl = URL(mApiUrl)
+                fileRootUrl = URL(mApiUrl)
+                Thread.sleep(1000)
             } catch (e: InterruptedException) {
+                return false
+            } catch (e: MalformedURLException) {
                 return false
             }
 
+            val item = ServerItem(-1, "name", apiUrl, fileRootUrl, "", ServerType.SRV_PCM)
+            mUrlEnteredListener?.onUrlEnteredCorrectly(item)
             return true //
         }
 
@@ -167,7 +189,7 @@ class AddServerStep1 : Fragment() {
             if (success!!) {
                 //finish()
             } else {
-                view!!.prompt_api_url.error = getString(R.string.error_incorrect_password)
+                view!!.prompt_api_url.error = getString(R.string.error_invalid_url)
                 view!!.prompt_api_url.requestFocus()
             }
         }
@@ -176,5 +198,9 @@ class AddServerStep1 : Fragment() {
             mAuthTask = null
             showProgress(false)
         }
+    }
+
+    interface UrlEnteredListener {
+        fun onUrlEnteredCorrectly(srvItem: ServerItem)
     }
 }

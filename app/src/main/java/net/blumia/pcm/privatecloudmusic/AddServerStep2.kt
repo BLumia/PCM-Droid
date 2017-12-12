@@ -16,11 +16,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.pager_add_server_step2.view.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
+import org.jetbrains.anko.UI
+import org.jetbrains.anko.runOnUiThread
 
 /**
  * Created by wzc78 on 2017/11/29.
  */
-class AddServerStep2 : Fragment() {
+class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -37,6 +39,14 @@ class AddServerStep2 : Fragment() {
     private fun isUrlValid(url: String): Boolean {
         //TODO: Replace this with your own logic
         return url.isNotEmpty()
+    }
+
+    override fun onUrlEnteredCorrectly(srvItem: ServerItem) {
+        context.runOnUiThread {
+            view!!.prompt_server_name.setText(srvItem.serverName)
+            view!!.prompt_api_url.setText(srvItem.apiUrl.toString())
+            view!!.prompt_www_root.setText(srvItem.fileRootUrl.toString())
+        }
     }
 
     /**
@@ -176,7 +186,7 @@ class AddServerStep2 : Fragment() {
             showProgress(false)
 
             if (success!!) {
-                Toast.makeText(view!!.context, R.string.placeholder, Toast.LENGTH_SHORT) // FIXME: toast not shown
+                Toast.makeText(view!!.context, R.string.placeholder, Toast.LENGTH_SHORT).show() // FIXME: toast not shown
                 val intent = Intent()//.putExtra("asd","asd")
                 activity.setResult(616, intent)
                 activity.finish()
