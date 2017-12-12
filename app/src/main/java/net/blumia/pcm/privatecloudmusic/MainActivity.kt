@@ -20,8 +20,6 @@ import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.content_main.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
 import okhttp3.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.contentView
 import org.jetbrains.anko.db.MapRowParser
 import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
@@ -30,8 +28,8 @@ import java.io.IOException
 import java.net.URL
 import android.os.IBinder
 import android.os.Message
+import org.jetbrains.anko.*
 import org.jetbrains.anko.db.delete
-import org.jetbrains.anko.toast
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -116,7 +114,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_music_prev.setOnClickListener(this)
         btn_music_next.setOnClickListener(this)
 
+        btn_exit_app.setOnClickListener { exitAppOnClick() }
+        tv_exit_app.setOnClickListener { exitAppOnClick() }
+
         fetchSrvList()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (serviceBound) {
+            unbindService(serviceConnection)
+            Log.e("exit", "asd")
+            //service is active
+            player!!.stopSelf()
+        }
+        if (receiver != null) {
+            unregisterReceiver(receiver)
+        }
     }
 
     override fun onBackPressed() {
@@ -189,21 +203,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         serviceBound = savedInstanceState.getBoolean("ServiceState")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (serviceBound) {
-            unbindService(serviceConnection)
-            //service is active
-            player!!.stopSelf()
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         toast("onActivityResult entered" + resultCode)
         if (resultCode == ADD_SERVER_REQUEST_CODE) {
             fetchSrvList()
         }
+    }
+
+    private fun exitAppOnClick() {
+        alert(getString(R.string.really_want_to_exit), getString(R.string.confirm_exit)) {
+            yesButton { finish() }
+            noButton {}
+        }.show()
     }
 
     // region db operate

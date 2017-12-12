@@ -13,6 +13,8 @@
     <string name="placeholder_short">BL</string>
     <string name="placeholder_time">0:00</string>
     <string name="title_activity_add_server">Add Server</string>
+    <string name="confirm_exit">Confirm Exit</string>
+    <string name="really_want_to_exit">Are you sure you want to exit Private Cloud Music?</string>
 
     <!-- Strings related to add server -->
     <string name="prompt_api_url">PCM Server API URL</string>

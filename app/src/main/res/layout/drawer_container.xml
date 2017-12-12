@@ -93,6 +93,7 @@
             android:background="@drawable/ic_power_white_24dp"
             android:gravity="center_vertical"/>
         <TextView
+            android:id="@+id/tv_exit_app"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="61"
