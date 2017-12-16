@@ -28,7 +28,6 @@ class PlayerService: Service() {
         //AudioPlayer Channel ID and notification ID
         private const val CHANNEL_ID = "net.blumia.pcm.MEDIA_PLAYBACK_CHANNEL"
         private const val NOTIFICATION_ID = 616
-        private const val PLAYBACK_POSITION_REFRESH_INTERVAL_MS = 250L
     }
 
     //region Service LocalBinder and onBind

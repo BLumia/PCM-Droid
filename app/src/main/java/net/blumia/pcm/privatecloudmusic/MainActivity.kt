@@ -25,7 +25,6 @@ import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
 import org.jetbrains.anko.design.snackbar
 import java.io.IOException
-import java.net.URL
 import android.os.IBinder
 import android.os.Message
 import org.jetbrains.anko.*
