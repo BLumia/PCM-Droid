@@ -24,6 +24,7 @@ class PlayerService: Service() {
         const val DO_NEXT = 2
         const val DO_PREV = 3
         const val DO_RESUME = 4
+        const val DO_SEEK = 5
         const val ACTION_UPDATE_TIME = "net.blumia.pcm.privatecloudmusic.ACTION_UPDATE_TIME"
         //AudioPlayer Channel ID and notification ID
         private const val CHANNEL_ID = "net.blumia.pcm.MEDIA_PLAYBACK_CHANNEL"
@@ -146,6 +147,9 @@ class PlayerService: Service() {
                             }
                         }
                         DO_RESUME -> mPlayerHolder!!.play()
+                        DO_SEEK -> {
+                            mPlayerHolder!!.seekTo(intent.getIntExtra("pos", 0))
+                        }
                     }
                     return
                 }

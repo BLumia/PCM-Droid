@@ -27,6 +27,7 @@ import org.jetbrains.anko.design.snackbar
 import java.io.IOException
 import android.os.IBinder
 import android.os.Message
+import android.widget.SeekBar
 import org.jetbrains.anko.*
 import org.jetbrains.anko.db.delete
 
@@ -115,6 +116,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         btn_exit_app.setOnClickListener { exitAppOnClick() }
         tv_exit_app.setOnClickListener { exitAppOnClick() }
+
+        sb_music_progressbar.setOnSeekBarChangeListener(object:SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                seekTo(seekBar!!.progress)
+            }
+        })
 
         fetchSrvList()
     }
@@ -416,6 +425,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if (!serviceBound) return
         val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
         broadcastIntent.putExtra("do", PlayerService.DO_NEXT) // next
+        sendBroadcast(broadcastIntent)
+    }
+
+    private fun seekTo(pos: Int) {
+        if (!serviceBound) return
+        val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
+        broadcastIntent.putExtra("do", PlayerService.DO_SEEK) // seek
+        broadcastIntent.putExtra("pos", pos)
         sendBroadcast(broadcastIntent)
     }
 
