@@ -8,7 +8,7 @@
         android:id="@+id/tv_music_title"
         android:layout_width="match_parent"
         android:layout_height="25dp"
-        android:text="@string/placeholder"
+        android:text="@string/no_file_loaded"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryText"
         android:gravity="center_vertical"/>

@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 curServerItem = serverIconListAdapter.getItem(position)
                 if (curServerItem!!.type == ServerType.ADD_SRV) return
                 prefs!!.curSrvIndex = position
+                tv_cur_server_name.text = curServerItem!!.serverName
                 fetchFolderList(curServerItem!!)
             }
         })
@@ -355,6 +356,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 prefs!!.curSrvIndex = 0
                 serverIconListAdapter.getItem(0)
             }
+            tv_cur_server_name.text = curServerItem!!.serverName
             fetchFolderList(curServerItem!!)
         } else {
             // open add server activity?
