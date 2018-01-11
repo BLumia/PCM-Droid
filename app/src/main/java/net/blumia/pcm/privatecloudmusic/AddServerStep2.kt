@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.pager_add_server_step2.view.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
 import org.jetbrains.anko.UI
 import org.jetbrains.anko.runOnUiThread
+import java.net.MalformedURLException
+import java.net.URL
 
 /**
  * Created by wzc78 on 2017/11/29.
@@ -37,7 +39,11 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
     }
 
     private fun isUrlValid(url: String): Boolean {
-        //TODO: Replace this with your own logic
+        try {
+            URL(url)
+        } catch (e: MalformedURLException) {
+            return false
+        }
         return url.isNotEmpty()
     }
 
@@ -67,12 +73,13 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
         // Store values at the time of the login attempt.
         val srvName = view!!.prompt_server_name.text.toString()
         val apiUrlStr = view!!.prompt_api_url.text.toString()
+        val fileRootStr = view!!.prompt_www_root.text.toString()
         //val passwordStr = password.text.toString()
 
         var cancel = false
         var focusView: View? = null
 
-        // Check for a valid email address.
+        // Check for a valid api url string.
         if (TextUtils.isEmpty(apiUrlStr)) {
             view!!.prompt_api_url.error = getString(R.string.error_field_required)
             focusView = view!!.prompt_api_url
@@ -80,6 +87,17 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
         } else if (!isUrlValid(apiUrlStr)) {
             view!!.prompt_api_url.error = getString(R.string.error_invalid_url)
             focusView = view!!.prompt_api_url
+            cancel = true
+        }
+
+        // Check for a valid file root url string.
+        if (TextUtils.isEmpty(fileRootStr)) {
+            view!!.prompt_www_root.error = getString(R.string.error_field_required)
+            focusView = view!!.prompt_www_root
+            cancel = true
+        } else if (!isUrlValid(fileRootStr)) {
+            view!!.prompt_www_root.error = getString(R.string.error_invalid_url)
+            focusView = view!!.prompt_www_root
             cancel = true
         }
 
@@ -91,7 +109,7 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true)
-            mAsyncTask = AddServerTask(srvName, apiUrlStr)
+            mAsyncTask = AddServerTask(srvName, apiUrlStr, fileRootStr)
             mAsyncTask!!.execute(null as Void?)
         }
     }
@@ -159,7 +177,7 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    inner class AddServerTask internal constructor(private val mSrvName: String, private val mApiUrl: String) : AsyncTask<Void, Void, Boolean>() {
+    inner class AddServerTask internal constructor(private val mSrvName: String, private val mApiUrl: String, private val mFileRootUrl: String) : AsyncTask<Void, Void, Boolean>() {
 
         override fun doInBackground(vararg params: Void): Boolean? {
             // TODO: attempt authentication against a network service.
@@ -167,8 +185,8 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
             try {
                 val values = ContentValues()
                 values.put("name", mSrvName)
-                values.put("api_url", "https://pcm.blumia.cn/api.php")
-                values.put("file_root_url", "https://pcm.blumia.cn/")
+                values.put("api_url", mApiUrl)
+                values.put("file_root_url", mFileRootUrl)
                 values.put("password", "")
                 context.database.use {
                     insert(DB_TABLE_SRV_LIST, null, values)
