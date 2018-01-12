@@ -14,11 +14,11 @@ No license for now... When the app is ready for a stable release, I'll choose a 
 
 ## TODO
 
-[ ] Add server setup page actually do a setup(with `pcm://` schema support).
-[ ] Allowd hide server icon sidebar when user only add one server to PCM-droid app.
-[ ] Server icon sidebar rework(so ugly now).
-[ ] Edit existing server info.
-[ ] Save song to local storage when playback using wifi / allowd user download song to local storage.
-[ ] Playlist mode support.
-[ ] MediaSession support.
-[ ] Language switcher.
+- [ ] Add server setup page actually do a setup(with `pcm://` schema support).
+- [ ] Allowd hide server icon sidebar when user only add one server to PCM-droid app.
+- [ ] Server icon sidebar rework(so ugly now).
+- [ ] Edit existing server info.
+- [ ] Save song to local storage when playback using wifi / allowd user download song to local storage.
+- [ ] Playlist mode support.
+- [ ] MediaSession support.
+- [ ] Language switcher.
