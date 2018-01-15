@@ -17,6 +17,7 @@ class Prefs(context: Context) {
         const val CUR_WEB_FILE_RELATIVE_PATH = "current_web_file_relative_path"
         const val PLAY_LIST = "playlist"
         const val CUR_SONG_INDEX = "current_playing_song"
+        const val GUI_LOOP_BTN = "gui_loop_btn"
     }
 
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0)
@@ -44,4 +45,7 @@ class Prefs(context: Context) {
     var curSongIndex: Int
         get() = prefs.getInt(CUR_SONG_INDEX, 0)
         set(value) = prefs.edit().putInt(CUR_SONG_INDEX, value).apply()
+    var guiLoopBtn: Boolean
+        get() = prefs.getBoolean(GUI_LOOP_BTN, false)
+        set(value) = prefs.edit().putBoolean(CUR_SONG_INDEX, value).apply()
 }

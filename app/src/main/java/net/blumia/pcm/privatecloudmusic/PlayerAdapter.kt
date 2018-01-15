@@ -1,7 +1,7 @@
 package net.blumia.pcm.privatecloudmusic
 
 /**
- * Created by Gary Wang on 2017/12/9.
+ * Interfaces for MediaPlayer holder.
  */
 interface PlayerAdapter {
     fun init()
@@ -11,6 +11,7 @@ interface PlayerAdapter {
     fun reset()
     fun pause()
     fun seekTo(pos: Int)
+    fun setLoop(loop: Boolean)
     fun isPlaying(): Boolean
 }
 

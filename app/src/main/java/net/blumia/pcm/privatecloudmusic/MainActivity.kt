@@ -114,6 +114,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_music_play_pause.setOnClickListener(this)
         btn_music_prev.setOnClickListener(this)
         btn_music_next.setOnClickListener(this)
+        btn_music_loop.setOnClickListener(this)
 
         btn_exit_app.setOnClickListener { exitAppOnClick() }
         tv_exit_app.setOnClickListener { exitAppOnClick() }
@@ -198,6 +199,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btn_music_next -> run {
                 next()
+            }
+            R.id.btn_music_loop -> run {
+                // TODO: should make btn clear to see now is looping or not.
+                val curLoopState = prefs!!.guiLoopBtn
+                setLoop(!curLoopState)
+                toast("Loop: " + !curLoopState)
+                prefs!!.guiLoopBtn = !curLoopState
             }
         }
     }
@@ -435,6 +443,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
         broadcastIntent.putExtra("do", PlayerService.DO_SEEK) // seek
         broadcastIntent.putExtra("pos", pos)
+        sendBroadcast(broadcastIntent)
+    }
+
+    private fun setLoop(loop: Boolean) {
+        if (!serviceBound) return
+        val broadcastIntent = Intent(Broadcast_PLAY_NEW_AUDIO)
+        broadcastIntent.putExtra("do", PlayerService.DO_LOOP) // seek
+        broadcastIntent.putExtra("loop", loop)
         sendBroadcast(broadcastIntent)
     }
 

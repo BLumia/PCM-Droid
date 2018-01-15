@@ -84,6 +84,12 @@ class PlayerHolder(context: Context): PlayerAdapter,
         mMediaPlayer!!.seekTo(pos)
     }
 
+    override fun setLoop(loop: Boolean) {
+        if (mMediaPlayer == null || mMediaPlayer!!.isPlaying) return
+        mMediaPlayer!!.isLooping = loop
+        Log.d("PLAYBACK", "Loop: " + mMediaPlayer!!.isLooping)
+    }
+
     override fun isPlaying(): Boolean{
         if (mMediaPlayer == null) return false
         return mMediaPlayer!!.isPlaying

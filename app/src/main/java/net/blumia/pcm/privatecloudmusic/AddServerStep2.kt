@@ -16,13 +16,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.pager_add_server_step2.view.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
-import org.jetbrains.anko.UI
 import org.jetbrains.anko.runOnUiThread
 import java.net.MalformedURLException
 import java.net.URL
 
 /**
- * Created by wzc78 on 2017/11/29.
+ * Add server setup page, fragment 2.
+ *
+ * From fragment 1 (step1) we got some server information but we don't know if it's correct.
+ * So this page allow user modify server info and then add the server to server list.
  */
 class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
     /**

@@ -18,7 +18,12 @@ import java.net.MalformedURLException
 import java.net.URL
 
 /**
- * Created by wzc78 on 2017/11/27.
+ * Add server setup page, fragment 1.
+ *
+ * We allow user enter a simple url to add server, with a server API url or a `pcm://` schema url
+ * Then we will check the valid of url user entered, parse the info and fill in the blanks at step 2
+ *
+ * Currently this fragment is just a placeholder, doesn't check valid at all.
  */
 class AddServerStep1 : Fragment() {
     /**

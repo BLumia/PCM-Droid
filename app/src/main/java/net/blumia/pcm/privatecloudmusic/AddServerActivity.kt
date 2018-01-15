@@ -7,10 +7,11 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import kotlinx.android.synthetic.main.activity_add_server.*
-import org.jetbrains.anko.UI
 
 /**
- * A login screen that offers login via email/password.
+ * An add server setup page that offers adding server function via http api url and `pcm://`schema.
+ *
+ * To make it more easy to add a server to PCM-droid client, we made this setup page.
  */
 class AddServerActivity : AppCompatActivity(), AddServerStep1.UrlEnteredListener {
 
