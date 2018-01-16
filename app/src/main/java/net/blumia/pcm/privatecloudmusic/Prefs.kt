@@ -47,5 +47,5 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putInt(CUR_SONG_INDEX, value).apply()
     var guiLoopBtn: Boolean
         get() = prefs.getBoolean(GUI_LOOP_BTN, false)
-        set(value) = prefs.edit().putBoolean(CUR_SONG_INDEX, value).apply()
+        set(value) = prefs.edit().putBoolean(GUI_LOOP_BTN, value).apply()
 }
