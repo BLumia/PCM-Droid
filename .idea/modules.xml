@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PrivateCloudMusic.iml" filepath="$PROJECT_DIR$/PrivateCloudMusic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PCM-Droid.iml" filepath="$PROJECT_DIR$/PCM-Droid.iml" />
+      <module fileurl="file://D:\AndroidStudioProjects\PCM-Droid\PrivateCloudMusic.iml" filepath="D:\AndroidStudioProjects\PCM-Droid\PrivateCloudMusic.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\AndroidStudioProjects\PCM-Droid\app\app.iml" filepath="D:\AndroidStudioProjects\PCM-Droid\app\app.iml" />
     </modules>
   </component>
 </project>
