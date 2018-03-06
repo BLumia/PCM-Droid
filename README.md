@@ -21,6 +21,6 @@ No license for now... When the app is ready for a stable release, I'll choose a 
 - [ ] Save song to local storage when playback using wifi / allow user download song to local storage.
 - [ ] Playlist mode support.
 - [ ] MediaSession support.
-- [ ] Language switcher.
+- [ ] Language switcher. (WIP: set language option in setting)
 - [ ] Deal with audio focus.
-- [ ] Music can loop.
+- [ ] Music can loop. (WIP: update icon when loop enabled)
