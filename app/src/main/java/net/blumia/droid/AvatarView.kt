@@ -2,10 +2,10 @@ package net.blumia.droid
 
 import android.content.Context
 import android.graphics.*
-import android.support.v4.content.ContextCompat
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
 
 import net.blumia.pcm.privatecloudmusic.R
 
@@ -128,7 +128,7 @@ class AvatarView : View {
 
         //canvas.drawColor(Color.BLUE);
         val circleRadius = resources.displayMetrics.density * 60f / 2
-        canvas.drawCircle(circleRadius, circleRadius, circleRadius, mBitmapPaint);
+        mBitmapPaint?.let { canvas.drawCircle(circleRadius, circleRadius, circleRadius, it) };
 
         // Draw the text.
         canvas.drawText(mTextString!!,

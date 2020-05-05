@@ -1,6 +1,5 @@
 package net.blumia.pcm.privatecloudmusic
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,9 @@ import kotlinx.android.synthetic.main.item_rv_folder.view.*
 import java.net.URL
 import org.json.JSONException
 import android.util.Log
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_rv_music_items.view.*
 import org.json.JSONObject
-import java.io.Serializable
 import java.net.URLDecoder
 
 
@@ -33,8 +32,8 @@ class ServerIconListAdapter(private val activity: MainActivity) : RecyclerView.A
         this.mOnItemClickListener = mOnItemClickListener
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder!!.bindItems(list[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bindItems(list[position])
 
         // on click listener
         if (mOnItemClickListener != null) {
@@ -45,8 +44,8 @@ class ServerIconListAdapter(private val activity: MainActivity) : RecyclerView.A
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent!!.context).inflate(R.layout.item_avatar_view, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_avatar_view, parent, false)
         return ViewHolder(v)
     }
 
@@ -85,8 +84,8 @@ class FolderListAdapter(activity: MainActivity) : RecyclerView.Adapter<FolderLis
         this.mOnItemClickListener = mOnItemClickListener
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder!!.bindItems(list[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bindItems(list[position])
 
         // on click listener
         if (mOnItemClickListener != null) {
@@ -97,8 +96,8 @@ class FolderListAdapter(activity: MainActivity) : RecyclerView.Adapter<FolderLis
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent!!.context).inflate(R.layout.item_rv_folder, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_rv_folder, parent, false)
         return ViewHolder(v)
     }
 
@@ -148,8 +147,8 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
         this.mOnItemClickListener = mOnItemClickListener
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder!!.bindItems(list[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bindItems(list[position])
 
         // on click listener
         if (mOnItemClickListener != null) {
@@ -160,8 +159,8 @@ class SongListAdapter(activity: MainActivity) : RecyclerView.Adapter<SongListAda
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent!!.context).inflate(R.layout.item_rv_music_items, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_rv_music_items, parent, false)
         return ViewHolder(v)
     }
 

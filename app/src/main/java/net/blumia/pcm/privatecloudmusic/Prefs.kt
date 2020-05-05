@@ -26,13 +26,13 @@ class Prefs(context: Context) {
         get() = prefs.getInt(CUR_SRV_INDEX, 0)
         set(value) = prefs.edit().putInt(CUR_SRV_INDEX, value).apply()
     var curWebFileRootPath: String
-        get() = prefs.getString(CUR_WEB_FILE_ROOT_PATH, "")
+        get() = prefs.getString(CUR_WEB_FILE_ROOT_PATH, "")!!
         set(value) = prefs.edit().putString(CUR_WEB_FILE_ROOT_PATH, value).apply()
     var curWebFileRelativePath: String
-        get() = prefs.getString(CUR_WEB_FILE_RELATIVE_PATH, "")
+        get() = prefs.getString(CUR_WEB_FILE_RELATIVE_PATH, "")!!
         set(value) = prefs.edit().putString(CUR_WEB_FILE_RELATIVE_PATH, value).apply()
     private var _playlist: String
-        get() = prefs.getString(PLAY_LIST, "") // default value issue...
+        get() = prefs.getString(PLAY_LIST, "")!! // default value issue...
         set(value) = prefs.edit().putString(PLAY_LIST, value).apply()
     var playlist: ArrayList<MusicItem>
         get() {

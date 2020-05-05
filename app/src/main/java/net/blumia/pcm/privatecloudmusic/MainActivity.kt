@@ -3,33 +3,33 @@ package net.blumia.pcm.privatecloudmusic
 import android.content.*
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.drawer_container.*
-import kotlinx.android.synthetic.main.player_controlbar.*
 import android.preference.PreferenceActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.widget.LinearLayout
-import kotlinx.android.synthetic.main.content_main.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
 import okhttp3.*
 import org.jetbrains.anko.db.MapRowParser
-import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
 import org.jetbrains.anko.design.snackbar
 import java.io.IOException
 import android.os.IBinder
 import android.os.Message
 import android.widget.SeekBar
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.drawer_container.*
+import kotlinx.android.synthetic.main.player_controlbar.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.db.delete
+import org.jetbrains.anko.db.parseList
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 fetchFolderList(curServerItem!!)
             }
         })
-        rv_server_icon_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        rv_server_icon_list.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rv_server_icon_list.adapter = serverIconListAdapter
 
         val folderListAdapter = FolderListAdapter(this)
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 fetchSongList(folderListAdapter.getItem(position))
             }
         })
-        rv_folder_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        rv_folder_list.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rv_folder_list.adapter = folderListAdapter
 
         val songListAdapter = SongListAdapter(this)
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 songItemOnClick(songListAdapter.getItem(position), position)
             }
         })
-        rv_song_list.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        rv_song_list.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rv_song_list.adapter = songListAdapter
 
         btn_serverPopupMenu.setOnClickListener(this)
@@ -210,8 +210,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    public override fun onSaveInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState!!.putBoolean("ServiceState", serviceBound)
+    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putBoolean("ServiceState", serviceBound)
         super.onSaveInstanceState(savedInstanceState)
     }
 

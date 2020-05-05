@@ -8,12 +8,12 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.pager_add_server_step2.view.*
 import net.blumia.pcm.privatecloudmusic.SQLiteDatabaseOpenHelper.Companion.DB_TABLE_SRV_LIST
 import org.jetbrains.anko.runOnUiThread
@@ -50,7 +50,7 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
     }
 
     override fun onUrlEnteredCorrectly(srvItem: ServerItem) {
-        context.runOnUiThread {
+        context?.runOnUiThread {
             view!!.prompt_server_name.setText(srvItem.serverName)
             view!!.prompt_api_url.setText(srvItem.apiUrl.toString())
             view!!.prompt_www_root.setText(srvItem.fileRootUrl.toString())
@@ -190,7 +190,7 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
                 values.put("api_url", mApiUrl)
                 values.put("file_root_url", mFileRootUrl)
                 values.put("password", "")
-                context.database.use {
+                context!!.database.use {
                     insert(DB_TABLE_SRV_LIST, null, values)
                 }
             } catch (e: InterruptedException) {
@@ -208,8 +208,8 @@ class AddServerStep2 : Fragment(), AddServerStep1.UrlEnteredListener {
             if (success!!) {
                 Toast.makeText(view!!.context, R.string.placeholder, Toast.LENGTH_SHORT).show() // FIXME: toast not shown
                 val intent = Intent()//.putExtra("asd","asd")
-                activity.setResult(616, intent)
-                activity.finish()
+                activity?.setResult(616, intent)
+                activity?.finish()
             } else {
                 view!!.prompt_api_url.error = getString(R.string.error_incorrect_password)
                 view!!.prompt_api_url.requestFocus()
